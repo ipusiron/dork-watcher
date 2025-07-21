@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Dork Watcher</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Dork Watcher</h1>
+    <p>Google検索を使って、あなたのサイトが漏洩情報を含んでいないかチェックしましょう。</p>
+
+    <div class="input-section">
+      <label for="siteUrl">対象サイトのドメイン名（例: example.com）</label><br>
+      <input type="text" id="siteUrl" placeholder="yourdomain.com">
+      <button onclick="generateDorks()">チェック開始</button>
+    </div>
+
+    <div id="results" class="results-section">
+      <!-- 生成されたDorkリストがここに表示されます -->
+    </div>
+  </div>
+
+  <script src="dorks.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
