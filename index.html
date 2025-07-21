@@ -17,9 +17,21 @@
       <button onclick="generateDorks()">チェック開始</button>
     </div>
 
+    <div class="filter-section">
+      <label for="categoryFilter">カテゴリで絞り込み：</label>
+      <select id="categoryFilter" onchange="generateDorks()">
+        <option value="all">すべて表示</option>
+        <option value="ファイル漏洩">ファイル漏洩</option>
+        <option value="管理系">管理系</option>
+        <option value="情報ワード">情報ワード</option>
+        <option value="その他">その他</option>
+      </select>
+    </div>
+
     <div id="results" class="results-section">
       <!-- Dorkの検索結果がここに出力される -->
     </div>
+
   </div>
 
   <script src="dorks.js"></script>

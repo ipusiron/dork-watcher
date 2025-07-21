@@ -1,5 +1,6 @@
 function generateDorks() {
   const site = document.getElementById("siteUrl").value.trim();
+  const category = document.getElementById("categoryFilter").value;
   const resultsDiv = document.getElementById("results");
 
   resultsDiv.innerHTML = "";
@@ -9,14 +10,18 @@ function generateDorks() {
     return;
   }
 
-  dorks.forEach(dork => {
+  const filtered = (category === "all")
+    ? dorks
+    : dorks.filter(d => d.category === category);
+
+  filtered.forEach(dork => {
     const fullQuery = `site:${site} ${dork.query}`;
     const encodedQuery = encodeURIComponent(fullQuery);
     const searchUrl = `https://www.google.com/search?q=${encodedQuery}`;
 
     const entry = document.createElement("div");
     entry.className = "dork-entry";
-    entry.setAttribute("data-tooltip", dork.explanation); // 行全体に説明を設定
+    entry.setAttribute("data-tooltip", dork.explanation);
 
     const link = document.createElement("a");
     link.href = searchUrl;
