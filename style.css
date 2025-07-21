@@ -176,6 +176,7 @@ select {
 }
 
 .help-button,
+.lang-toggle,
 .theme-toggle {
   background: var(--btn-primary);
   color: white;
@@ -183,7 +184,7 @@ select {
   border-radius: 50%;
   width: 40px;
   height: 40px;
-  font-size: 1em;
+  font-size: 0.8em;
   cursor: pointer;
   transition: background-color 0.3s ease;
   box-shadow: 0 2px 8px var(--container-shadow);
@@ -192,7 +193,13 @@ select {
   justify-content: center;
 }
 
+.help-button,
+.theme-toggle {
+  font-size: 1em;
+}
+
 .help-button:hover,
+.lang-toggle:hover,
 .theme-toggle:hover {
   background: var(--btn-primary-hover);
 }

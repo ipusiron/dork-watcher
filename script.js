@@ -1,3 +1,166 @@
+// 言語設定
+const translations = {
+  ja: {
+    title: "Dork Watcher",
+    subtitle: "Google検索を使って、あなたのサイトが漏洩情報を含んでいないかチェックしましょう。",
+    domainLabel: "対象サイトのドメイン名（例: example.com）",
+    domainPlaceholder: "yourdomain.com",
+    checkButton: "チェック開始",
+    categoryLabel: "カテゴリー：",
+    riskLabel: "リスク：",
+    categoryAll: "すべて",
+    categoryFile: "ファイル漏洩",
+    categoryAdmin: "管理系", 
+    categoryInfo: "情報ワード",
+    categoryOther: "その他",
+    riskAll: "すべて",
+    riskHigh: "High",
+    riskMedium: "Medium", 
+    riskLow: "Low",
+    errorDomain: "⚠️ ドメイン名を入力してください。",
+    noDorks: "該当するDorkはありません。",
+    helpTitle: "Dork Watcher ヘルプ",
+    helpTooltip: "ヘルプ",
+    themeTooltipDark: "ダークモードに切り替え",
+    themeTooltipLight: "ライトモードに切り替え",
+    langTooltip: "English"
+  },
+  en: {
+    title: "Dork Watcher",
+    subtitle: "Check your site for potential information leaks using Google search.",
+    domainLabel: "Target domain name (e.g., example.com)",
+    domainPlaceholder: "yourdomain.com",
+    checkButton: "Start Check",
+    categoryLabel: "Category:",
+    riskLabel: "Risk:",
+    categoryAll: "All",
+    categoryFile: "File Leaks",
+    categoryAdmin: "Admin Access",
+    categoryInfo: "Info Keywords",
+    categoryOther: "Others",
+    riskAll: "All",
+    riskHigh: "High",
+    riskMedium: "Medium",
+    riskLow: "Low", 
+    errorDomain: "⚠️ Please enter a domain name.",
+    noDorks: "No matching Dorks found.",
+    helpTitle: "Dork Watcher Help",
+    helpTooltip: "Help",
+    themeTooltipDark: "Switch to Dark Mode",
+    themeTooltipLight: "Switch to Light Mode",
+    langTooltip: "日本語"
+  }
+};
+
+let currentLang = 'ja';
+
+function toggleLanguage() {
+  currentLang = currentLang === 'ja' ? 'en' : 'ja';
+  localStorage.setItem('language', currentLang);
+  updateTexts();
+  updateLanguageIcon();
+}
+
+function updateLanguageIcon() {
+  const langButton = document.querySelector('.lang-toggle');
+  langButton.textContent = currentLang === 'ja' ? 'EN' : 'JA';
+  langButton.title = translations[currentLang].langTooltip;
+}
+
+function updateTexts() {
+  const t = translations[currentLang];
+  
+  document.querySelector('h1').innerHTML = `${t.title} <span id="resultsCounter" class="results-counter"></span>`;
+  document.querySelector('.container > p').textContent = t.subtitle;
+  document.querySelector('label[for="siteUrl"]').textContent = t.domainLabel;
+  document.getElementById('siteUrl').placeholder = t.domainPlaceholder;
+  document.querySelector('button[onclick="generateDorks()"]').textContent = t.checkButton;
+  document.querySelector('label[for="categoryFilter"]').textContent = t.categoryLabel;
+  document.querySelector('label[for="riskFilter"]').textContent = t.riskLabel;
+  
+  // フィルタオプション更新
+  const categoryOptions = document.querySelectorAll('#categoryFilter option');
+  categoryOptions[0].textContent = t.categoryAll;
+  categoryOptions[1].textContent = t.categoryFile;
+  categoryOptions[2].textContent = t.categoryAdmin;
+  categoryOptions[3].textContent = t.categoryInfo;
+  categoryOptions[4].textContent = t.categoryOther;
+  
+  const riskOptions = document.querySelectorAll('#riskFilter option');
+  riskOptions[0].textContent = t.riskAll;
+  riskOptions[1].textContent = t.riskHigh;
+  riskOptions[2].textContent = t.riskMedium;
+  riskOptions[3].textContent = t.riskLow;
+  
+  document.querySelector('.help-button').title = t.helpTooltip;
+  
+  // テーマボタンのツールチップも更新
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  updateThemeIcon(currentTheme);
+  
+  updateHelpModal();
+  
+  // 現在の結果を再生成
+  if (document.getElementById('siteUrl').value.trim()) {
+    generateDorks();
+  }
+}
+
+function updateHelpModal() {
+  const t = translations[currentLang];
+  document.querySelector('.modal-header h2').textContent = t.helpTitle;
+  
+  if (currentLang === 'en') {
+    document.querySelector('.modal-body').innerHTML = `
+      <h3>🔍 What is Dork Watcher?</h3>
+      <p>A tool to check your site for potential information leaks using Google Dorks.</p>
+      
+      <h3>📝 How to Use</h3>
+      <ol>
+        <li><strong>Enter Domain</strong>: Input the domain name you want to investigate (e.g., example.com).</li>
+        <li><strong>Select Filters</strong>: Filter Dorks by category and risk level.</li>
+        <li><strong>Start Check</strong>: Click the button to generate Google search links.</li>
+        <li><strong>Review Results</strong>: Click each link to check Google search results.</li>
+      </ol>
+
+      <h3>⚠️ Important Notes</h3>
+      <ul>
+        <li><strong>Only investigate your own sites</strong> - Avoid unauthorized investigation of others' sites.</li>
+        <li><strong>Empty results are normal</strong> - This indicates proper security measures are in place.</li>
+        <li><strong>Google search limitations</strong> - Frequent searches may be restricted by Google.</li>
+        <li><strong>Result interpretation</strong> - Hits don't necessarily indicate actual vulnerabilities. Expert verification is recommended.</li>
+      </ul>
+
+      <h3>📊 Category Descriptions</h3>
+      <ul>
+        <li><strong>File Leaks</strong>: Check for leaked sensitive files like .env, .sql, .log</li>
+        <li><strong>Admin Access</strong>: Check for exposed admin panels and login pages</li>
+        <li><strong>Info Keywords</strong>: Check for sensitive information like passwords and API keys</li>
+        <li><strong>Others</strong>: Check for directory listings, test pages, etc.</li>
+      </ul>
+
+      <h3>🎯 Risk Levels</h3>
+      <ul>
+        <li><strong>High</strong>: High possibility of direct sensitive information leakage</li>
+        <li><strong>Medium</strong>: Requires security attention</li>
+        <li><strong>Low</strong>: General information but recommended to check</li>
+      </ul>
+
+      <h3>🌗 Theme Toggle</h3>
+      <p>Use the button in the top right to switch between light and dark modes. Settings are automatically saved.</p>
+    `;
+  }
+}
+
+function initLanguage() {
+  const savedLang = localStorage.getItem('language');
+  if (savedLang && translations[savedLang]) {
+    currentLang = savedLang;
+  }
+  updateTexts();
+  updateLanguageIcon();
+}
+
 function toggleTheme() {
   const currentTheme = document.documentElement.getAttribute('data-theme');
   const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -9,12 +172,13 @@ function toggleTheme() {
 
 function updateThemeIcon(theme) {
   const toggleButton = document.querySelector('.theme-toggle');
+  const t = translations[currentLang];
   if (theme === 'dark') {
     toggleButton.innerHTML = '☀️';
-    toggleButton.title = 'ライトモードに切り替え';
+    toggleButton.title = t.themeTooltipLight;
   } else {
     toggleButton.innerHTML = '🌙';
-    toggleButton.title = 'ダークモードに切り替え';
+    toggleButton.title = t.themeTooltipDark;
   }
 }
 
@@ -27,7 +191,10 @@ function initTheme() {
   updateThemeIcon(theme);
 }
 
-document.addEventListener('DOMContentLoaded', initTheme);
+document.addEventListener('DOMContentLoaded', function() {
+  initTheme();
+  initLanguage();
+});
 
 function showHelpModal() {
   document.getElementById('helpModal').style.display = 'block';
@@ -71,7 +238,7 @@ function generateDorks() {
   resultsDiv.innerHTML = "";
 
   if (!site) {
-    resultsDiv.innerHTML = "<p>⚠️ ドメイン名を入力してください。</p>";
+    resultsDiv.innerHTML = `<p>${translations[currentLang].errorDomain}</p>`;
     updateResultsCounter(0);
     return;
   }
@@ -84,7 +251,7 @@ function generateDorks() {
   });
 
   if (filtered.length === 0) {
-    resultsDiv.innerHTML = "<p>該当するDorkはありません。</p>";
+    resultsDiv.innerHTML = `<p>${translations[currentLang].noDorks}</p>`;
     updateResultsCounter(0, dorks.length);
     return;
   }
@@ -98,7 +265,8 @@ function generateDorks() {
 
     const entry = document.createElement("div");
     entry.className = "dork-entry";
-    entry.setAttribute("data-tooltip", dork.explanation);
+    const explanation = currentLang === 'en' && dork.explanationEn ? dork.explanationEn : dork.explanation;
+    entry.setAttribute("data-tooltip", explanation);
 
     const link = document.createElement("a");
     link.href = searchUrl;
