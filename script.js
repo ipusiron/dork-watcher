@@ -23,7 +23,9 @@ const translations = {
     helpTooltip: "ヘルプ",
     themeTooltipDark: "ダークモードに切り替え",
     themeTooltipLight: "ライトモードに切り替え",
-    langTooltip: "English"
+    langTooltip: "English",
+    footerText: "GitHubリポジトリはこちら（",
+    footerLink: "ipusiron/dork-watcher"
   },
   en: {
     title: "Dork Watcher",
@@ -48,7 +50,9 @@ const translations = {
     helpTooltip: "Help",
     themeTooltipDark: "Switch to Dark Mode",
     themeTooltipLight: "Switch to Light Mode",
-    langTooltip: "日本語"
+    langTooltip: "日本語",
+    footerText: "GitHub Repository (",
+    footerLink: "ipusiron/dork-watcher"
   }
 };
 
@@ -93,6 +97,10 @@ function updateTexts() {
   riskOptions[3].textContent = t.riskLow;
   
   document.querySelector('.help-button').title = t.helpTooltip;
+  
+  // フッターテキストを更新
+  document.getElementById('footerText').textContent = `🔗 ${t.footerText}`;
+  document.getElementById('footerLink').textContent = t.footerLink;
   
   // テーマボタンのツールチップも更新
   const currentTheme = document.documentElement.getAttribute('data-theme');
