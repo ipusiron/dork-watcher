@@ -11,6 +11,8 @@
   --tooltip-text: white;
   --btn-primary: #007acc;
   --btn-primary-hover: #005fa3;
+  --link-color: #0066cc;
+  --link-visited: #551a8b;
 }
 
 [data-theme="dark"] {
@@ -26,6 +28,8 @@
   --tooltip-text: #e0e0e0;
   --btn-primary: #0088cc;
   --btn-primary-hover: #0077bb;
+  --link-color: #4da6ff;
+  --link-visited: #b19cd9;
 }
 
 body {
@@ -276,4 +280,18 @@ select {
 
 .modal-body strong {
   color: var(--text-color);
+}
+
+/* リンクのスタイリング */
+.dork-entry a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.dork-entry a:visited {
+  color: var(--link-visited);
+}
+
+.dork-entry a:hover {
+  text-decoration: underline;
 }
