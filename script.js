@@ -42,6 +42,12 @@ function hideHelpModal() {
 document.addEventListener('keydown', function(event) {
   if (event.key === 'Escape') {
     hideHelpModal();
+  } else if (event.key === 'Enter') {
+    const activeElement = document.activeElement;
+    // ドメイン入力フィールドにフォーカスがある場合、またはボタン以外の要素の場合
+    if (activeElement.id === 'siteUrl' || (activeElement.tagName !== 'BUTTON' && activeElement.tagName !== 'SELECT')) {
+      generateDorks();
+    }
   }
 });
 
