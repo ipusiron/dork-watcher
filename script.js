@@ -16,6 +16,7 @@ function generateDorks() {
 
     const entry = document.createElement("div");
     entry.className = "dork-entry";
+    entry.setAttribute("data-tooltip", dork.explanation); // 行全体に説明を設定
 
     const link = document.createElement("a");
     link.href = searchUrl;
@@ -24,7 +25,6 @@ function generateDorks() {
 
     const riskSpan = document.createElement("span");
     riskSpan.className = `risk ${dork.risk}`;
-    riskSpan.setAttribute("data-tooltip", dork.explanation);
     riskSpan.textContent = dork.risk.charAt(0).toUpperCase() + dork.risk.slice(1);
 
     entry.appendChild(link);

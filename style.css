@@ -54,6 +54,7 @@ button:hover {
   border-left: 4px solid #ccc;
   border-radius: 4px;
   transition: background 0.3s ease;
+  position: relative;
 }
 
 .dork-entry:hover {
@@ -73,25 +74,25 @@ button:hover {
 .risk.high {
   background-color: #d9534f;
 }
+
 .risk.medium {
   background-color: #f0ad4e;
 }
+
 .risk.low {
   background-color: #5bc0de;
 }
 
-/* カスタムツールチップ */
-.risk[data-tooltip] {
-  position: relative;
+/* カスタムツールチップ（行全体に対して） */
+.dork-entry[data-tooltip] {
   cursor: help;
 }
 
-.risk[data-tooltip]::after {
+.dork-entry[data-tooltip]::after {
   content: attr(data-tooltip);
   position: absolute;
-  top: 150%;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 110%;
+  left: 10px;
   background: #333;
   color: white;
   padding: 6px 10px;
@@ -104,6 +105,6 @@ button:hover {
   z-index: 10;
 }
 
-.risk[data-tooltip]:hover::after {
+.dork-entry[data-tooltip]:hover::after {
   opacity: 1;
 }
