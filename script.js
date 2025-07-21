@@ -29,6 +29,22 @@ function initTheme() {
 
 document.addEventListener('DOMContentLoaded', initTheme);
 
+function showHelpModal() {
+  document.getElementById('helpModal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function hideHelpModal() {
+  document.getElementById('helpModal').style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    hideHelpModal();
+  }
+});
+
 function generateDorks() {
   const site = document.getElementById("siteUrl").value.trim();
   const category = document.getElementById("categoryFilter").value;

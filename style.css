@@ -156,10 +156,16 @@ select {
   transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
-.theme-toggle {
+.header-buttons {
   position: absolute;
   top: 1.5em;
   right: 1.5em;
+  display: flex;
+  gap: 0.5em;
+}
+
+.help-button,
+.theme-toggle {
   background: var(--btn-primary);
   color: white;
   border: none;
@@ -175,6 +181,92 @@ select {
   justify-content: center;
 }
 
+.help-button:hover,
 .theme-toggle:hover {
   background: var(--btn-primary-hover);
+}
+
+/* モーダル */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: var(--container-bg);
+  margin: 5% auto;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  box-shadow: 0 4px 20px var(--container-shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5em;
+  border-bottom: 1px solid var(--input-border);
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: var(--text-color);
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 2em;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-button:hover {
+  color: var(--btn-primary);
+}
+
+.modal-body {
+  padding: 1.5em;
+  overflow-y: auto;
+  flex: 1;
+  color: var(--text-color);
+}
+
+.modal-body h3 {
+  color: var(--btn-primary);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.modal-body h3:first-child {
+  margin-top: 0;
+}
+
+.modal-body ul,
+.modal-body ol {
+  padding-left: 1.5em;
+}
+
+.modal-body li {
+  margin-bottom: 0.5em;
+}
+
+.modal-body strong {
+  color: var(--text-color);
 }

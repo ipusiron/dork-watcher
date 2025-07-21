@@ -8,7 +8,10 @@
   </head>
   <body>
     <div class="container">
-      <button class="theme-toggle" onclick="toggleTheme()" title="ダークモードに切り替え">🌙</button>
+      <div class="header-buttons">
+        <button class="help-button" onclick="showHelpModal()" title="ヘルプ">❓</button>
+        <button class="theme-toggle" onclick="toggleTheme()" title="ダークモードに切り替え">🌙</button>
+      </div>
       <h1>Dork Watcher</h1>
       <p>
         Google検索を使って、あなたのサイトが漏洩情報を含んでいないかチェックしましょう。
@@ -42,6 +45,54 @@
 
       <div id="results" class="results-section">
         <!-- Dorkの検索結果がここに出力される -->
+      </div>
+    </div>
+
+    <!-- ヘルプモーダル -->
+    <div id="helpModal" class="modal" onclick="hideHelpModal()">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Dork Watcher ヘルプ</h2>
+          <button class="close-button" onclick="hideHelpModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <h3>🔍 Dork Watcherとは？</h3>
+          <p>Google Dorkを使って、あなたのサイトに潜在的な情報漏洩がないかを確認するためのツールです。</p>
+          
+          <h3>📝 使い方</h3>
+          <ol>
+            <li><strong>ドメイン名を入力</strong>: 調査したいサイトのドメイン名（例: example.com）を入力してください。</li>
+            <li><strong>フィルタを選択</strong>: カテゴリやリスクレベルでDorkをフィルタリングできます。</li>
+            <li><strong>チェック開始</strong>: ボタンを押すとGoogle検索リンクが生成されます。</li>
+            <li><strong>結果確認</strong>: 各リンクをクリックしてGoogle検索結果を確認してください。</li>
+          </ol>
+
+          <h3>⚠️ 重要な注意事項</h3>
+          <ul>
+            <li><strong>自分のサイトのみ調査してください</strong> - 他人のサイトを無断で調査することは避けてください。</li>
+            <li><strong>多くの場合、検索結果は空です</strong> - これは正常で、適切にセキュリティ対策されていることを意味します。</li>
+            <li><strong>Google検索の制限</strong> - 頻繁な検索はGoogleによって制限される場合があります。</li>
+            <li><strong>結果の解釈</strong> - ヒットした場合でも、実際の脆弱性とは限りません。専門家による確認をお勧めします。</li>
+          </ul>
+
+          <h3>📊 カテゴリ説明</h3>
+          <ul>
+            <li><strong>ファイル漏洩</strong>: .env、.sql、.logなどの機密ファイルの漏洩をチェック</li>
+            <li><strong>管理系</strong>: 管理画面やログインページの露出をチェック</li>
+            <li><strong>情報ワード</strong>: パスワードやAPIキーなどの機密情報をチェック</li>
+            <li><strong>その他</strong>: ディレクトリリスティングやテストページなどをチェック</li>
+          </ul>
+
+          <h3>🎯 リスクレベル</h3>
+          <ul>
+            <li><strong>High</strong>: 機密情報の漏洩に直結する可能性が高い</li>
+            <li><strong>Medium</strong>: セキュリティ上の注意が必要</li>
+            <li><strong>Low</strong>: 一般的な情報だが確認推奨</li>
+          </ul>
+
+          <h3>🌗 テーマ切り替え</h3>
+          <p>右上のボタンでライトモード・ダークモードを切り替えできます。設定は自動保存されます。</p>
+        </div>
       </div>
     </div>
 
