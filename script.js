@@ -24,7 +24,7 @@ function generateDorks() {
 
     const riskSpan = document.createElement("span");
     riskSpan.className = `risk ${dork.risk}`;
-    riskSpan.title = dork.explanation;
+    riskSpan.setAttribute("data-tooltip", dork.explanation);
     riskSpan.textContent = dork.risk.charAt(0).toUpperCase() + dork.risk.slice(1);
 
     entry.appendChild(link);
