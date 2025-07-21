@@ -1,3 +1,34 @@
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  updateThemeIcon(newTheme);
+}
+
+function updateThemeIcon(theme) {
+  const toggleButton = document.querySelector('.theme-toggle');
+  if (theme === 'dark') {
+    toggleButton.innerHTML = '☀️';
+    toggleButton.title = 'ライトモードに切り替え';
+  } else {
+    toggleButton.innerHTML = '🌙';
+    toggleButton.title = 'ダークモードに切り替え';
+  }
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme');
+  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+  
+  document.documentElement.setAttribute('data-theme', theme);
+  updateThemeIcon(theme);
+}
+
+document.addEventListener('DOMContentLoaded', initTheme);
+
 function generateDorks() {
   const site = document.getElementById("siteUrl").value.trim();
   const category = document.getElementById("categoryFilter").value;

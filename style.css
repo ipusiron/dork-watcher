@@ -1,18 +1,51 @@
+:root {
+  --bg-color: #ffffff;
+  --text-color: #222;
+  --container-bg: #f9f9f9;
+  --container-shadow: rgba(0,0,0,0.05);
+  --input-border: #ccc;
+  --dork-bg: #fff;
+  --dork-border: #ccc;
+  --dork-hover: #f0f0f0;
+  --tooltip-bg: #333;
+  --tooltip-text: white;
+  --btn-primary: #007acc;
+  --btn-primary-hover: #005fa3;
+}
+
+[data-theme="dark"] {
+  --bg-color: #1a1a1a;
+  --text-color: #e0e0e0;
+  --container-bg: #2d2d2d;
+  --container-shadow: rgba(0,0,0,0.3);
+  --input-border: #555;
+  --dork-bg: #3d3d3d;
+  --dork-border: #555;
+  --dork-hover: #4d4d4d;
+  --tooltip-bg: #555;
+  --tooltip-text: #e0e0e0;
+  --btn-primary: #0088cc;
+  --btn-primary-hover: #0077bb;
+}
+
 body {
   font-family: sans-serif;
-  background-color: #ffffff;
-  color: #222;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   margin: 0;
   padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
   max-width: 800px;
   margin: 2em auto;
   padding: 1.5em;
-  background: #f9f9f9;
+  background: var(--container-bg);
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  box-shadow: 0 0 10px var(--container-shadow);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
 }
 
 h1 {
@@ -28,37 +61,41 @@ input[type="text"] {
   width: 70%;
   padding: 0.6em;
   font-size: 1em;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 4px;
+  background: var(--dork-bg);
+  color: var(--text-color);
+  transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
 button {
   padding: 0.6em 1em;
   margin-left: 0.5em;
   font-size: 1em;
-  background-color: #007acc;
+  background-color: var(--btn-primary);
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #005fa3;
+  background-color: var(--btn-primary-hover);
 }
 
 .dork-entry {
   margin-bottom: 1em;
   padding: 0.8em;
-  background: #fff;
-  border-left: 4px solid #ccc;
+  background: var(--dork-bg);
+  border-left: 4px solid var(--dork-border);
   border-radius: 4px;
   transition: background 0.3s ease;
   position: relative;
 }
 
 .dork-entry:hover {
-  background: #f0f0f0;
+  background: var(--dork-hover);
 }
 
 .risk {
@@ -93,8 +130,8 @@ button:hover {
   position: absolute;
   top: 110%;
   left: 10px;
-  background: #333;
-  color: white;
+  background: var(--tooltip-bg);
+  color: var(--tooltip-text);
   padding: 6px 10px;
   border-radius: 4px;
   white-space: nowrap;
@@ -107,4 +144,37 @@ button:hover {
 
 .dork-entry[data-tooltip]:hover::after {
   opacity: 1;
+}
+
+select {
+  padding: 0.4em;
+  margin: 0 0.5em;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  background: var(--dork-bg);
+  color: var(--text-color);
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 1.5em;
+  right: 1.5em;
+  background: var(--btn-primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 8px var(--container-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-toggle:hover {
+  background: var(--btn-primary-hover);
 }
