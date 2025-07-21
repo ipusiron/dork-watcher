@@ -1,40 +1,50 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <title>Dork Watcher</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="container">
-    <h1>Dork Watcher</h1>
-    <p>Google検索を使って、あなたのサイトが漏洩情報を含んでいないかチェックしましょう。</p>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dork Watcher</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Dork Watcher</h1>
+      <p>
+        Google検索を使って、あなたのサイトが漏洩情報を含んでいないかチェックしましょう。
+      </p>
 
-    <div class="input-section">
-      <label for="siteUrl">対象サイトのドメイン名（例: example.com）</label><br>
-      <input type="text" id="siteUrl" placeholder="yourdomain.com">
-      <button onclick="generateDorks()">チェック開始</button>
+      <div class="input-section">
+        <label for="siteUrl">対象サイトのドメイン名（例: example.com）</label
+        ><br />
+        <input type="text" id="siteUrl" placeholder="yourdomain.com" />
+        <button onclick="generateDorks()">チェック開始</button>
+      </div>
+
+      <div class="filter-section">
+        <label for="categoryFilter">カテゴリ：</label>
+        <select id="categoryFilter" onchange="generateDorks()">
+          <option value="all">すべて</option>
+          <option value="ファイル漏洩">ファイル漏洩</option>
+          <option value="管理系">管理系</option>
+          <option value="情報ワード">情報ワード</option>
+          <option value="その他">その他</option>
+        </select>
+
+        <label for="riskFilter">リスク：</label>
+        <select id="riskFilter" onchange="generateDorks()">
+          <option value="all">すべて</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+
+      <div id="results" class="results-section">
+        <!-- Dorkの検索結果がここに出力される -->
+      </div>
     </div>
 
-    <div class="filter-section">
-      <label for="categoryFilter">カテゴリで絞り込み：</label>
-      <select id="categoryFilter" onchange="generateDorks()">
-        <option value="all">すべて表示</option>
-        <option value="ファイル漏洩">ファイル漏洩</option>
-        <option value="管理系">管理系</option>
-        <option value="情報ワード">情報ワード</option>
-        <option value="その他">その他</option>
-      </select>
-    </div>
-
-    <div id="results" class="results-section">
-      <!-- Dorkの検索結果がここに出力される -->
-    </div>
-
-  </div>
-
-  <script src="dorks.js"></script>
-  <script src="script.js"></script>
-</body>
+    <script src="dorks.js"></script>
+    <script src="script.js"></script>
+  </body>
 </html>

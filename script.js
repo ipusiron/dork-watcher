@@ -1,6 +1,7 @@
 function generateDorks() {
   const site = document.getElementById("siteUrl").value.trim();
   const category = document.getElementById("categoryFilter").value;
+  const risk = document.getElementById("riskFilter").value;
   const resultsDiv = document.getElementById("results");
 
   resultsDiv.innerHTML = "";
@@ -10,9 +11,17 @@ function generateDorks() {
     return;
   }
 
-  const filtered = (category === "all")
-    ? dorks
-    : dorks.filter(d => d.category === category);
+  // カテゴリとリスクの両方でANDフィルタリング
+  const filtered = dorks.filter(dork => {
+    const matchCategory = (category === "all" || dork.category === category);
+    const matchRisk = (risk === "all" || dork.risk === risk);
+    return matchCategory && matchRisk;
+  });
+
+  if (filtered.length === 0) {
+    resultsDiv.innerHTML = "<p>該当するDorkはありません。</p>";
+    return;
+  }
 
   filtered.forEach(dork => {
     const fullQuery = `site:${site} ${dork.query}`;
