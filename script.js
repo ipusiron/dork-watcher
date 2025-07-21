@@ -45,6 +45,17 @@ document.addEventListener('keydown', function(event) {
   }
 });
 
+function updateResultsCounter(count, totalDorks = null) {
+  const counter = document.getElementById("resultsCounter");
+  if (count === 0) {
+    counter.textContent = "";
+  } else if (totalDorks !== null) {
+    counter.textContent = `(${count}/${totalDorks} Dorks)`;
+  } else {
+    counter.textContent = `(${count} Dorks)`;
+  }
+}
+
 function generateDorks() {
   const site = document.getElementById("siteUrl").value.trim();
   const category = document.getElementById("categoryFilter").value;
@@ -55,6 +66,7 @@ function generateDorks() {
 
   if (!site) {
     resultsDiv.innerHTML = "<p>⚠️ ドメイン名を入力してください。</p>";
+    updateResultsCounter(0);
     return;
   }
 
@@ -67,8 +79,11 @@ function generateDorks() {
 
   if (filtered.length === 0) {
     resultsDiv.innerHTML = "<p>該当するDorkはありません。</p>";
+    updateResultsCounter(0, dorks.length);
     return;
   }
+
+  updateResultsCounter(filtered.length, dorks.length);
 
   filtered.forEach(dork => {
     const fullQuery = `site:${site} ${dork.query}`;

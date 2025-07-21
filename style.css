@@ -53,6 +53,13 @@ h1 {
   margin-bottom: 0.5em;
 }
 
+.results-counter {
+  font-size: 0.6em;
+  color: var(--btn-primary);
+  font-weight: normal;
+  margin-left: 0.5em;
+}
+
 .input-section {
   margin-bottom: 1.5em;
 }
