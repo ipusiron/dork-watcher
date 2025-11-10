@@ -280,6 +280,7 @@ function generateDorks() {
     link.href = searchUrl;
     link.textContent = `🔍 ${fullQuery}`;
     link.target = "_blank";
+    link.rel = "noopener noreferrer";
 
     const riskSpan = document.createElement("span");
     riskSpan.className = `risk ${dork.risk}`;
