@@ -9,35 +9,34 @@ Dork Watcher is a Google Dorking security tool that helps check websites for pot
 ## Architecture
 
 - **Static Web Application**: Pure HTML/CSS/JavaScript with no build process or server dependencies
-- **dorks.js**: Contains an array of Google Dork definitions with categories (ファイル漏洩/管理系/情報ワード/その他) and risk levels (high/medium/low)
-- **script.js**: Main application logic that filters dorks and generates Google search URLs
-- **index.html**: Single-page interface with domain input, category/risk filters, and results display
-- **style.css**: Styling for the web interface
+- **dorks.js**: Contains the `dorks` array with Google Dork definitions
+- **script.js**: Main application logic including filtering, URL generation, theming, and i18n
+- **index.html**: Single-page interface with domain input, filters, help modal, and results display
+- **style.css**: Styling with CSS custom properties for dark/light theme support
 
 ## Core Components
 
-### Dork Structure
-Each dork object contains:
+### Dork Structure (dorks.js)
+Each dork object in the `dorks` array contains:
 - `query`: The Google search pattern (e.g., "filetype:xls", "inurl:admin")
 - `explanation`: Japanese description of what the dork searches for
+- `explanationEn`: English description (for i18n support)
 - `risk`: Risk level classification (high/medium/low)
 - `category`: Type classification (ファイル漏洩/管理系/情報ワード/その他)
 
-### Main Functionality
-The `generateDorks()` function in script.js:
-1. Takes user domain input
-2. Applies category and risk filters
-3. Constructs `site:domain.com` + dork queries
-4. Generates clickable Google search links
+### Main Functions (script.js)
+- `generateDorks()`: Core function that filters dorks by category/risk and generates Google search URLs with `site:domain.com` prefix
+- `toggleTheme()` / `initTheme()`: Dark/light mode with localStorage persistence and system preference detection
+- `toggleLanguage()` / `initLanguage()`: Japanese/English i18n with localStorage persistence
+- `showHelpModal()` / `hideHelpModal()`: Help modal display
 
-## Development Notes
+### Keyboard Shortcuts
+- `Enter`: Trigger dork generation
+- `Escape`: Close help modal
 
-- No package manager, build tools, or dependencies
-- Can be served directly as static files
-- Opens in browser for local development
-- Designed for GitHub Pages deployment
-- All text is in Japanese as this is a Japanese security tool
+## Development
 
-## Testing
-
-Open index.html in a web browser and test with various domain inputs and filter combinations.
+- No build process required - serve static files directly
+- Open index.html in browser or use any local server
+- Deployed to GitHub Pages at https://ipusiron.github.io/dork-watcher/
+- Supports bilingual interface (Japanese primary, English secondary)

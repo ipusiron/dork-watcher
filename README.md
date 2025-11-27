@@ -1,3 +1,39 @@
+<!--
+---
+id: day020
+slug: dork-watcher
+
+title: "Dork Watcher"
+
+subtitle_ja: "Google Hacking支援ツール"
+subtitle_en: "Google Hacking Assistant Tool"
+
+description_ja: "Google Dorkを使って自サイトに潜在的な情報漏洩がないか確認するためのツール"
+description_en: "A tool to check your site for potential information leaks using Google Dorks"
+
+category_ja:
+  - OSINT
+  - Googleハッキング
+category_en:
+  - OSINT
+  - Google Hacking
+
+difficulty: 1
+
+tags:
+  - google-dork
+  - osint
+  - information-leak
+  - security-audit
+  - web-security
+
+repo_url: "https://github.com/ipusiron/dork-watcher"
+demo_url: "https://ipusiron.github.io/dork-watcher/"
+
+hub: true
+---
+-->
+
 # Dork Watcher - Google Hacking支援ツール
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/ipusiron/dork-watcher?style=social)
