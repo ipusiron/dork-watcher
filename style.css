@@ -8,11 +8,19 @@
   --dork-border: #ccc;
   --dork-hover: #f0f0f0;
   --tooltip-bg: #333;
-  --tooltip-text: white;
+  --tooltip-text: #ffffff;
   --btn-primary: #007acc;
   --btn-primary-hover: #005fa3;
   --link-color: #0066cc;
   --link-visited: #551a8b;
+  --button-text: #ffffff;
+  --counter-color: #005a99;
+  --risk-text: #ffffff;
+  --risk-high: #c9302c;
+  --risk-medium: #a15c00;
+  --risk-low: #31708f;
+  --undocumented-bg: #5a5a5a;
+  --undocumented-text: #ffffff;
 }
 
 [data-theme="dark"] {
@@ -23,13 +31,28 @@
   --input-border: #555;
   --dork-bg: #3d3d3d;
   --dork-border: #555;
-  --dork-hover: #4d4d4d;
+  --dork-hover: #3d3d3d;
   --tooltip-bg: #555;
   --tooltip-text: #e0e0e0;
-  --btn-primary: #0088cc;
+  --btn-primary: #0069a8;
   --btn-primary-hover: #0077bb;
-  --link-color: #4da6ff;
-  --link-visited: #b19cd9;
+  --link-color: #66b3ff;
+  --link-visited: #c4b0e6;
+  --counter-color: #4db8ff;
+  --risk-text: #1a1a1a;
+  --risk-high: #ff8a80;
+  --risk-medium: #ffb74d;
+  --risk-low: #81d4fa;
+  --undocumented-bg: #c9c9c9;
+  --undocumented-text: #1a1a1a;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
 }
 
 body {
@@ -44,6 +67,7 @@ body {
 .container {
   max-width: 800px;
   margin: 2em auto;
+  width: calc(100% - 2em);
   padding: 1.5em;
   background: var(--container-bg);
   border-radius: 8px;
@@ -55,13 +79,14 @@ body {
 h1 {
   font-size: 1.8em;
   margin-bottom: 0.5em;
+  padding-right: 170px;
 }
 
 .results-counter {
-  font-size: 0.6em;
-  color: var(--btn-primary);
+  font-size: 1em;
+  color: var(--counter-color);
   font-weight: normal;
-  margin-left: 0.5em;
+  margin-left: 0;
 }
 
 .input-section {
@@ -69,7 +94,7 @@ h1 {
 }
 
 input[type="text"] {
-  width: 70%;
+  width: calc(100% - 150px);
   padding: 0.6em;
   font-size: 1em;
   border: 1px solid var(--input-border);
@@ -80,11 +105,13 @@ input[type="text"] {
 }
 
 button {
+  min-width: 44px;
+  min-height: 44px;
   padding: 0.6em 1em;
-  margin-left: 0.5em;
+  margin-left: 0;
   font-size: 1em;
   background-color: var(--btn-primary);
-  color: white;
+  color: var(--button-text);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -103,6 +130,10 @@ button:hover {
   border-radius: 4px;
   transition: background 0.3s ease;
   position: relative;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5em;
 }
 
 .dork-entry:hover {
@@ -112,23 +143,23 @@ button:hover {
 .risk {
   display: inline-block;
   padding: 2px 6px;
-  margin-left: 10px;
+  margin-left: 0;
   border-radius: 4px;
   font-weight: bold;
-  color: white;
+  color: var(--risk-text);
   font-size: 0.9em;
 }
 
 .risk.high {
-  background-color: #d9534f;
+  background-color: var(--risk-high);
 }
 
 .risk.medium {
-  background-color: #f0ad4e;
+  background-color: var(--risk-medium);
 }
 
 .risk.low {
-  background-color: #5bc0de;
+  background-color: var(--risk-low);
 }
 
 /* カスタムツールチップ（行全体に対して） */
@@ -145,7 +176,11 @@ button:hover {
   color: var(--tooltip-text);
   padding: 6px 10px;
   border-radius: 4px;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  width: max-content;
+  max-width: min(90vw, 28em, calc(100% - 20px));
+  visibility: hidden;
   font-size: 0.85em;
   opacity: 0;
   pointer-events: none;
@@ -153,13 +188,19 @@ button:hover {
   z-index: 10;
 }
 
-.dork-entry[data-tooltip]:hover::after {
+.dork-entry[data-tooltip]:hover::after,
+.dork-entry[data-tooltip]:focus-within::after {
+  visibility: visible;
   opacity: 1;
 }
 
 select {
+  min-height: 44px;
+  min-width: 44px;
+  max-width: 100%;
+  font-size: 1em;
   padding: 0.4em;
-  margin: 0 0.5em;
+  margin: 0;
   border: 1px solid var(--input-border);
   border-radius: 4px;
   background: var(--dork-bg);
@@ -179,11 +220,11 @@ select {
 .lang-toggle,
 .theme-toggle {
   background: var(--btn-primary);
-  color: white;
+  color: var(--button-text);
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   font-size: 0.8em;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -206,7 +247,6 @@ select {
 
 /* モーダル */
 .modal {
-  display: none;
   position: fixed;
   z-index: 1000;
   left: 0;
@@ -256,7 +296,8 @@ select {
 }
 
 .close-button:hover {
-  color: var(--btn-primary);
+  background: var(--dork-bg);
+  color: var(--counter-color);
 }
 
 .modal-body {
@@ -267,7 +308,7 @@ select {
 }
 
 .modal-body h3 {
-  color: var(--btn-primary);
+  color: var(--counter-color);
   margin-top: 1.5em;
   margin-bottom: 0.5em;
 }
@@ -291,6 +332,10 @@ select {
 
 /* リンクのスタイリング */
 .dork-entry a {
+  overflow-wrap: anywhere;
+  min-width: 0;
+  flex: 1 1 300px;
+  padding: 0.6em 0;
   color: var(--link-color);
   text-decoration: none;
 }
@@ -328,4 +373,102 @@ select {
 
 .footer a:hover {
   text-decoration: underline;
+}
+
+.filter-section {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8em;
+  margin-bottom: 1em;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  min-width: 0;
+}
+
+#permissionNote {
+  font-size: 0.9em;
+  line-height: 1.5;
+  color: var(--text-color);
+}
+
+#statusMessage:empty,
+.results-counter:empty {
+  display: none;
+}
+
+.undocumented {
+  background: var(--undocumented-bg);
+  color: var(--undocumented-text);
+  font-size: 0.9em;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.copy-button {
+  margin-left: auto;
+}
+
+.modal-open {
+  overflow: hidden;
+}
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--counter-color);
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .container {
+    width: calc(100% - 1em);
+    padding: 1em;
+    margin: 0.5em auto;
+  }
+
+  .header-buttons {
+    position: static;
+    justify-content: flex-end;
+  }
+
+  h1 {
+    padding-right: 0;
+    font-size: 1.6em;
+  }
+
+  input[type="text"],
+  #generateButton {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 0.5em;
+  }
+
+  .filter-section {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .modal-header {
+    padding: 1em;
+  }
+
+  .modal-body {
+    padding: 1em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+  }
+}
+
+input::placeholder {
+  color: var(--text-color);
+  opacity: 1;
 }

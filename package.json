@@ -1,0 +1,7 @@
+{
+  "name": "dork-watcher",
+  "private": true,
+  "scripts": {
+    "test": "node --test"
+  }
+}
