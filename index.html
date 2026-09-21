@@ -2,19 +2,26 @@
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
+    <meta name="referrer" content="no-referrer">
     <title>Dork Watcher</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
+
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   </head>
   <body>
+    <noscript>このツールを使うには、ブラウザーのJavaScriptを有効にしてください。</noscript>
     <div class="container">
       <div class="header-buttons">
-        <button class="help-button" onclick="showHelpModal()" title="ヘルプ">❓</button>
-        <button class="lang-toggle" onclick="toggleLanguage()" title="English">JA</button>
-        <button class="theme-toggle" onclick="toggleTheme()" title="ダークモードに切り替え">🌙</button>
+        <button class="help-button" type="button" aria-label="ヘルプ" title="ヘルプ">❓</button>
+        <button class="lang-toggle" type="button" aria-label="English" title="English">JA</button>
+        <button class="theme-toggle" type="button" aria-label="ダークモードに切り替え" title="ダークモードに切り替え">🌙</button>
       </div>
-      <h1>Dork Watcher <span id="resultsCounter" class="results-counter"></span></h1>
-      <p>
+      <h1><span id="appTitle">Dork Watcher</span></h1>
+      <p id="resultsCounter" class="results-counter" aria-live="polite"></p>
+      <p id="subtitle">
         Google検索を使って、あなたのサイトが漏洩情報を含んでいないかチェックしましょう。
       </p>
 
@@ -22,52 +29,70 @@
         <label for="siteUrl">対象サイトのドメイン名（例: example.com）</label
         ><br />
         <input type="text" id="siteUrl" placeholder="yourdomain.com" />
-        <button onclick="generateDorks()">チェック開始</button>
+        <button id="generateButton" type="button">チェック開始</button>
+        <p id="permissionNote">自分が管理するドメイン、または調査の許可を得たドメインだけを入力してください。</p>
       </div>
 
       <div class="filter-section">
-        <label for="categoryFilter">カテゴリー：</label>
-        <select id="categoryFilter" onchange="generateDorks()">
-          <option value="all">すべて</option>
-          <option value="ファイル漏洩">ファイル漏洩</option>
-          <option value="管理系">管理系</option>
-          <option value="情報ワード">情報ワード</option>
-          <option value="その他">その他</option>
-        </select>
-
-        <label for="riskFilter">リスク：</label>
-        <select id="riskFilter" onchange="generateDorks()">
-          <option value="all">すべて</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
+        <div class="filter-item">
+          <label for="operatorStyle">演算子の表記：</label>
+          <select id="operatorStyle">
+            <option value="filetype">filetype:（公式）</option>
+            <option value="ext">ext:（非公式・短縮）</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label for="categoryFilter">カテゴリー：</label>
+          <select id="categoryFilter">
+            <option value="all">すべて</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label for="riskFilter">リスク：</label>
+          <select id="riskFilter">
+            <option value="all">すべて</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label for="operatorFilter">演算子：</label>
+          <select id="operatorFilter">
+            <option value="all">すべて</option>
+            <option value="official">公式のみ</option>
+            <option value="unofficial">非公式を含む</option>
+          </select>
+        </div>
       </div>
 
-      <div id="results" class="results-section">
+      <p id="statusMessage" role="status" aria-live="polite"></p>
+      <div id="results" class="results-section" aria-live="polite">
         <!-- Dorkの検索結果がここに出力される -->
       </div>
 
       <footer class="footer">
-        <p><span id="footerText">GitHubリポジトリはこちら（</span><a href="https://github.com/ipusiron/dork-watcher" target="_blank" rel="noopener noreferrer" id="footerLink">ipusiron/dork-watcher</a><span>）</span></p>
+        <p><span id="footerText">GitHubリポジトリーはこちら（</span>
+          <a href="https://github.com/ipusiron/dork-watcher" target="_blank"
+            rel="noopener noreferrer" id="footerLink">ipusiron/dork-watcher</a><span>）</span></p>
       </footer>
     </div>
 
     <!-- ヘルプモーダル -->
-    <div id="helpModal" class="modal" onclick="hideHelpModal()">
-      <div class="modal-content" onclick="event.stopPropagation()">
+    <div id="helpModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+      <div class="modal-content">
         <div class="modal-header">
-          <h2>Dork Watcher ヘルプ</h2>
-          <button class="close-button" onclick="hideHelpModal()">&times;</button>
+          <h2 id="helpTitle">Dork Watcher ヘルプ</h2>
+          <button class="close-button" type="button" aria-label="ヘルプを閉じる">&times;</button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" id="helpJa" lang="ja" tabindex="0">
           <h3>🔍 Dork Watcherとは？</h3>
           <p>Google Dorkを使って、あなたのサイトに潜在的な情報漏洩がないかを確認するためのツールです。</p>
           
           <h3>📝 使い方</h3>
           <ol>
             <li><strong>ドメイン名を入力</strong>: 調査したいサイトのドメイン名（例: example.com）を入力してください。</li>
-            <li><strong>フィルターを選択</strong>: カテゴリーやリスクレベルでDorkをフィルタリングできます。</li>
+            <li><strong>フィルターを選択</strong>: カテゴリー・リスク・演算子の3軸でDorkを絞り込めます。</li>
             <li><strong>チェック開始</strong>: ボタンを押すとGoogle検索リンクが生成されます。</li>
             <li><strong>結果確認</strong>: 各リンクをクリックしてGoogle検索結果を確認してください。</li>
           </ol>
@@ -75,7 +100,7 @@
           <h3>⚠️ 重要な注意事項</h3>
           <ul>
             <li><strong>自分のサイトのみ調査してください</strong> - 他人のサイトを無断で調査することは避けてください。</li>
-            <li><strong>多くの場合、検索結果は空です</strong> - これは正常で、適切にセキュリティ対策されていることを意味します。</li>
+            <li><strong>多くの場合、検索結果は空です</strong> - ただし、空振りだけで安全とは判断できません。</li>
             <li><strong>Google検索の制限</strong> - 頻繁な検索はGoogleによって制限される場合があります。</li>
             <li><strong>結果の解釈</strong> - ヒットした場合でも、実際の脆弱性とは限りません。専門家による確認をおすすめします。</li>
           </ul>
@@ -95,12 +120,74 @@
             <li><strong>Low</strong>: 一般的な情報だが確認推奨</li>
           </ul>
 
+          <h3>🔤 公式演算子と非公式演算子</h3>
+          <p>Googleのヘルプに載っている演算子は&quot;&quot;・site:・-・before:・after:・filetype:の6つです。</p>
+          <p>inurl:・intitle:・intext:・ext:は文書化されておらず、予告なく効かなくなることがあります。</p>
+          <p>「演算子の表記」を切り替えると、同じ狙いの検索を両方の書き方で試せます。結果が同じか確かめてください。</p>
+          <h3>🧯 ヒットしたときの対処</h3>
+          <ol>
+            <li>まず塞ぐ：公開を止める、またはアクセスを制限する。</li>
+            <li>漏れた前提で動く：認証情報を無効にして発行し直す。</li>
+            <li>検索結果から消す：非表示ツールと恒久的な削除を併用する。</li>
+            <li>原因を直す：配置やデプロイの手順を見直す。</li>
+          </ol>
           <h3>🌗 テーマ切り替え</h3>
           <p>右上のボタンでライトモード・ダークモードを切り替えできます。設定は自動保存されます。</p>
+        </div>
+        <div class="modal-body" id="helpEn" lang="en" tabindex="0" hidden>
+          <h3>🔍 What is Dork Watcher?</h3>
+          <p>A tool to check your site for potential information leaks using Google Dorks.</p>
+
+          <h3>📝 How to Use</h3>
+          <ol>
+            <li><strong>Enter Domain</strong>: Input the domain name you want to investigate (e.g., example.com).</li>
+            <li><strong>Select Filters</strong>: Filter Dorks by category, risk and operator support.</li>
+            <li><strong>Start Check</strong>: Click the button to generate Google search links.</li>
+            <li><strong>Review Results</strong>: Click each link to check Google search results.</li>
+          </ol>
+
+          <h3>⚠️ Important Notes</h3>
+          <ul>
+            <li><strong>Only investigate your own sites</strong> - Avoid unauthorized investigation of others' sites.</li>
+            <li><strong>Empty results are normal</strong> - Empty results alone do not prove the site is safe.</li>
+            <li><strong>Google search limitations</strong> - Frequent searches may be restricted by Google.</li>
+            <li><strong>Result interpretation</strong> - Hits don't necessarily indicate actual vulnerabilities. Expert verification is recommended.</li>
+          </ul>
+
+          <h3>📊 Category Descriptions</h3>
+          <ul>
+            <li><strong>File Leaks</strong>: Check for leaked sensitive files like .env, .sql, .log</li>
+            <li><strong>Admin Access</strong>: Check for exposed admin panels and login pages</li>
+            <li><strong>Info Keywords</strong>: Check for sensitive information like passwords and API keys</li>
+            <li><strong>Others</strong>: Check for directory listings, test pages, etc.</li>
+          </ul>
+
+          <h3>🎯 Risk Levels</h3>
+          <ul>
+            <li><strong>High</strong>: High possibility of direct sensitive information leakage</li>
+            <li><strong>Medium</strong>: Requires security attention</li>
+            <li><strong>Low</strong>: General information but recommended to check</li>
+          </ul>
+
+          <h3>🔤 Documented and undocumented operators</h3>
+          <p>Google Help lists six operators: &quot;&quot;, site:, -, before:, after: and filetype:.</p>
+          <p>inurl:, intitle:, intext: and ext: are undocumented and may stop working without notice.</p>
+          <p>Switch Operator style to generate both forms for the same search goal, and compare their results.</p>
+          <h3>🧯 What to do after a hit</h3>
+          <ol>
+            <li>Stop exposure: remove public access or restrict access.</li>
+            <li>Assume exposure: revoke and reissue credentials.</li>
+            <li>Remove search results: use Removals and permanent removal measures.</li>
+            <li>Fix the cause: review deployment and file locations.</li>
+          </ol>
+          <h3>🌗 Theme Toggle</h3>
+          <p>Use the button in the top right to switch between light and dark modes. Settings are automatically saved.</p>
         </div>
       </div>
     </div>
 
+    <script src="domain.js"></script>
+    <script src="query.js"></script>
     <script src="dorks.js"></script>
     <script src="script.js"></script>
   </body>

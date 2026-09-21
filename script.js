@@ -24,8 +24,33 @@ const translations = {
     themeTooltipDark: "ダークモードに切り替え",
     themeTooltipLight: "ライトモードに切り替え",
     langTooltip: "English",
-    footerText: "GitHubリポジトリはこちら（",
-    footerLink: "ipusiron/dork-watcher"
+    footerText: "GitHubリポジトリーはこちら（",
+    footerLink: "ipusiron/dork-watcher",
+    operatorLabel: "演算子：",
+    styleLabel: "演算子の表記：",
+    operatorAll: "すべて",
+    operatorOfficial: "公式のみ",
+    operatorUnofficial: "非公式を含む",
+    styleFiletype: "filetype:（公式）",
+    styleExt: "ext:（非公式・短縮）",
+    errorWhitespace: "⚠️ ドメイン名に空白は使えません。検索演算子ではなくドメイン名だけを入力してください。",
+    errorIp: "⚠️ IPアドレスは site: 演算子で使えません。ドメイン名を入力してください。",
+    errorFormat: "⚠️ ドメイン名の形式が正しくありません（例: example.com）。",
+    searchingAs: "{input} を {domain} として検索します",
+    undocumented: "非公式",
+    undocumentedHelp: "Googleのヘルプに載っていない演算子を含む（予告なく効かなくなることがある）",
+    copy: "コピー",
+    copyLabel: "{query} をコピー",
+    copySuccess: "コピーしました",
+    copyFailure: "コピーできませんでした",
+    closeHelp: "ヘルプを閉じる",
+    permission: "自分が管理するドメイン、または調査の許可を得たドメインだけを入力してください。",
+    generated: "{count}件のDorkを生成しました",
+    styleChanged: "{style}: 表記に切り替えました。公式の演算子だけで書けるDorkは{count}件になります",
+    counter: "({count}/{total} Dorks)",
+    lightIcon: "☀️",
+    darkIcon: "🌙",
+    languageIcon: "EN"
   },
   en: {
     title: "Dork Watcher",
@@ -52,119 +77,135 @@ const translations = {
     themeTooltipLight: "Switch to Light Mode",
     langTooltip: "日本語",
     footerText: "GitHub Repository (",
-    footerLink: "ipusiron/dork-watcher"
+    footerLink: "ipusiron/dork-watcher",
+    operatorLabel: "Operators:",
+    styleLabel: "Operator style:",
+    operatorAll: "All",
+    operatorOfficial: "Documented only",
+    operatorUnofficial: "Includes undocumented",
+    styleFiletype: "filetype: (documented)",
+    styleExt: "ext: (undocumented)",
+    errorWhitespace: "⚠️ Domain names cannot contain spaces. Enter only the domain name, not a search operator.",
+    errorIp: "⚠️ site: does not work with IP addresses. Enter a domain name.",
+    errorFormat: "⚠️ Invalid domain name format (e.g. example.com).",
+    searchingAs: "Searching as {domain} (entered: {input})",
+    undocumented: "Undocumented",
+    undocumentedHelp: "Contains operators not listed in Google Help; they may stop working without notice.",
+    copy: "Copy",
+    copyLabel: "Copy {query}",
+    copySuccess: "Copied",
+    copyFailure: "Could not copy",
+    closeHelp: "Close help",
+    permission: "Enter only domains you manage or have permission to investigate.",
+    generated: "Generated {count} Dorks",
+    styleChanged: "Switched to {style}: style. {count} Dorks use documented operators only.",
+    counter: "({count}/{total} Dorks)",
+    lightIcon: "☀️",
+    darkIcon: "🌙",
+    languageIcon: "JA"
   }
 };
 
 let currentLang = 'ja';
+let hasGenerated = false;
+let previousFocus = null;
+let notice = null;
+let copyRevision = 0;
+
+function readSetting(key, allowed, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return allowed.includes(value) ? value : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function writeSetting(key, value) {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // 保存できなくても現在の画面の設定は維持する。
+  }
+}
+
+function textFor(key, values = {}) {
+  return translations[currentLang][key].replace(/\{(\w+)\}/g, (_, name) => String(values[name]));
+}
+
+function announce(key, values = {}) {
+  notice = { key, values };
+  document.getElementById('statusMessage').textContent = textFor(key, values);
+}
 
 function toggleLanguage() {
   currentLang = currentLang === 'ja' ? 'en' : 'ja';
-  localStorage.setItem('language', currentLang);
+  writeSetting('language', currentLang);
   updateTexts();
   updateLanguageIcon();
 }
 
 function updateLanguageIcon() {
   const langButton = document.querySelector('.lang-toggle');
-  langButton.textContent = currentLang === 'ja' ? 'EN' : 'JA';
-  langButton.title = translations[currentLang].langTooltip;
+  langButton.textContent = textFor('languageIcon');
+  langButton.title = textFor('langTooltip');
+  langButton.setAttribute('aria-label', textFor('langTooltip'));
 }
 
 function updateTexts() {
-  const t = translations[currentLang];
-  
-  document.querySelector('h1').innerHTML = `${t.title} <span id="resultsCounter" class="results-counter"></span>`;
-  document.querySelector('.container > p').textContent = t.subtitle;
-  document.querySelector('label[for="siteUrl"]').textContent = t.domainLabel;
-  document.getElementById('siteUrl').placeholder = t.domainPlaceholder;
-  document.querySelector('button[onclick="generateDorks()"]').textContent = t.checkButton;
-  document.querySelector('label[for="categoryFilter"]').textContent = t.categoryLabel;
-  document.querySelector('label[for="riskFilter"]').textContent = t.riskLabel;
-  
-  // フィルタオプション更新
-  const categoryOptions = document.querySelectorAll('#categoryFilter option');
-  categoryOptions[0].textContent = t.categoryAll;
-  categoryOptions[1].textContent = t.categoryFile;
-  categoryOptions[2].textContent = t.categoryAdmin;
-  categoryOptions[3].textContent = t.categoryInfo;
-  categoryOptions[4].textContent = t.categoryOther;
-  
-  const riskOptions = document.querySelectorAll('#riskFilter option');
-  riskOptions[0].textContent = t.riskAll;
-  riskOptions[1].textContent = t.riskHigh;
-  riskOptions[2].textContent = t.riskMedium;
-  riskOptions[3].textContent = t.riskLow;
-  
-  document.querySelector('.help-button').title = t.helpTooltip;
-  
-  // フッターテキストを更新
-  document.getElementById('footerText').textContent = `🔗 ${t.footerText}`;
-  document.getElementById('footerLink').textContent = t.footerLink;
-  
-  // テーマボタンのツールチップも更新
-  const currentTheme = document.documentElement.getAttribute('data-theme');
-  updateThemeIcon(currentTheme);
-  
+  document.documentElement.lang = currentLang;
+  const textIds = {
+    appTitle: 'title', subtitle: 'subtitle', generateButton: 'checkButton',
+    footerText: 'footerText', footerLink: 'footerLink', permissionNote: 'permission'
+  };
+  for (const [id, key] of Object.entries(textIds)) {
+    document.getElementById(id).textContent = textFor(key);
+  }
+  const labels = {
+    siteUrl: 'domainLabel', categoryFilter: 'categoryLabel', riskFilter: 'riskLabel',
+    operatorFilter: 'operatorLabel', operatorStyle: 'styleLabel'
+  };
+  for (const [id, key] of Object.entries(labels)) {
+    document.querySelector(`label[for="${id}"]`).textContent = textFor(key);
+  }
+  document.getElementById('siteUrl').placeholder = textFor('domainPlaceholder');
+  const categoryKeys = ['categoryFile', 'categoryAdmin', 'categoryInfo', 'categoryOther'];
+  document.querySelectorAll('#categoryFilter option').forEach((option, i) => {
+    option.textContent = textFor(i === 0 ? 'categoryAll' : categoryKeys[i - 1]);
+  });
+  const options = {
+    riskFilter: ['riskAll', 'riskHigh', 'riskMedium', 'riskLow'],
+    operatorFilter: ['operatorAll', 'operatorOfficial', 'operatorUnofficial'],
+    operatorStyle: ['styleFiletype', 'styleExt']
+  };
+  for (const [id, keys] of Object.entries(options)) {
+    document.querySelectorAll(`#${id} option`).forEach((option, i) => {
+      option.textContent = textFor(keys[i]);
+    });
+  }
+  const helpButton = document.querySelector('.help-button');
+  helpButton.title = textFor('helpTooltip');
+  helpButton.setAttribute('aria-label', textFor('helpTooltip'));
+  updateThemeIcon(document.documentElement.getAttribute('data-theme'));
   updateHelpModal();
-  
-  // 現在の結果を再生成
-  if (document.getElementById('siteUrl').value.trim()) {
-    generateDorks();
+
+  // 空欄のエラーも含めて再表示する。カウンターの要素は作り直さない。
+  const savedNotice = notice;
+  if (hasGenerated) generateDorks();
+  if (savedNotice && savedNotice.key !== 'generated') {
+    announce(savedNotice.key, savedNotice.values);
   }
 }
 
 function updateHelpModal() {
-  const t = translations[currentLang];
-  document.querySelector('.modal-header h2').textContent = t.helpTitle;
-  
-  if (currentLang === 'en') {
-    document.querySelector('.modal-body').innerHTML = `
-      <h3>🔍 What is Dork Watcher?</h3>
-      <p>A tool to check your site for potential information leaks using Google Dorks.</p>
-      
-      <h3>📝 How to Use</h3>
-      <ol>
-        <li><strong>Enter Domain</strong>: Input the domain name you want to investigate (e.g., example.com).</li>
-        <li><strong>Select Filters</strong>: Filter Dorks by category and risk level.</li>
-        <li><strong>Start Check</strong>: Click the button to generate Google search links.</li>
-        <li><strong>Review Results</strong>: Click each link to check Google search results.</li>
-      </ol>
-
-      <h3>⚠️ Important Notes</h3>
-      <ul>
-        <li><strong>Only investigate your own sites</strong> - Avoid unauthorized investigation of others' sites.</li>
-        <li><strong>Empty results are normal</strong> - This indicates proper security measures are in place.</li>
-        <li><strong>Google search limitations</strong> - Frequent searches may be restricted by Google.</li>
-        <li><strong>Result interpretation</strong> - Hits don't necessarily indicate actual vulnerabilities. Expert verification is recommended.</li>
-      </ul>
-
-      <h3>📊 Category Descriptions</h3>
-      <ul>
-        <li><strong>File Leaks</strong>: Check for leaked sensitive files like .env, .sql, .log</li>
-        <li><strong>Admin Access</strong>: Check for exposed admin panels and login pages</li>
-        <li><strong>Info Keywords</strong>: Check for sensitive information like passwords and API keys</li>
-        <li><strong>Others</strong>: Check for directory listings, test pages, etc.</li>
-      </ul>
-
-      <h3>🎯 Risk Levels</h3>
-      <ul>
-        <li><strong>High</strong>: High possibility of direct sensitive information leakage</li>
-        <li><strong>Medium</strong>: Requires security attention</li>
-        <li><strong>Low</strong>: General information but recommended to check</li>
-      </ul>
-
-      <h3>🌗 Theme Toggle</h3>
-      <p>Use the button in the top right to switch between light and dark modes. Settings are automatically saved.</p>
-    `;
-  }
+  document.getElementById('helpTitle').textContent = textFor('helpTitle');
+  document.querySelector('.close-button').setAttribute('aria-label', textFor('closeHelp'));
+  document.getElementById('helpJa').hidden = currentLang !== 'ja';
+  document.getElementById('helpEn').hidden = currentLang !== 'en';
 }
 
 function initLanguage() {
-  const savedLang = localStorage.getItem('language');
-  if (savedLang && translations[savedLang]) {
-    currentLang = savedLang;
-  }
+  currentLang = readSetting('language', ['ja', 'en'], 'ja');
   updateTexts();
   updateLanguageIcon();
 }
@@ -172,122 +213,195 @@ function initLanguage() {
 function toggleTheme() {
   const currentTheme = document.documentElement.getAttribute('data-theme');
   const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  
   document.documentElement.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
+  writeSetting('theme', newTheme);
   updateThemeIcon(newTheme);
 }
 
 function updateThemeIcon(theme) {
   const toggleButton = document.querySelector('.theme-toggle');
-  const t = translations[currentLang];
-  if (theme === 'dark') {
-    toggleButton.innerHTML = '☀️';
-    toggleButton.title = t.themeTooltipLight;
-  } else {
-    toggleButton.innerHTML = '🌙';
-    toggleButton.title = t.themeTooltipDark;
-  }
+  const dark = theme === 'dark';
+  toggleButton.textContent = textFor(dark ? 'lightIcon' : 'darkIcon');
+  toggleButton.title = textFor(dark ? 'themeTooltipLight' : 'themeTooltipDark');
+  toggleButton.setAttribute('aria-label', toggleButton.title);
 }
 
 function initTheme() {
-  const savedTheme = localStorage.getItem('theme');
   const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
-  
+  const theme = readSetting('theme', ['light', 'dark'], systemPrefersDark ? 'dark' : 'light');
   document.documentElement.setAttribute('data-theme', theme);
   updateThemeIcon(theme);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  const categorySelect = document.getElementById('categoryFilter');
+  categoriesOf(dorks).forEach(category => {
+    const option = document.createElement('option');
+    option.value = category;
+    categorySelect.appendChild(option);
+  });
+  const styleSelect = document.getElementById('operatorStyle');
+  styleSelect.value = readSetting('operatorStyle', ['filetype', 'ext'], 'filetype');
   initTheme();
   initLanguage();
+  document.getElementById('generateButton').addEventListener('click', generateDorks);
+  document.querySelector('.lang-toggle').addEventListener('click', toggleLanguage);
+  document.querySelector('.theme-toggle').addEventListener('click', toggleTheme);
+  document.querySelector('.help-button').addEventListener('click', showHelpModal);
+  document.querySelector('.close-button').addEventListener('click', hideHelpModal);
+  document.getElementById('helpModal').addEventListener('click', event => {
+    if (event.target.id === 'helpModal') hideHelpModal();
+  });
+  ['categoryFilter', 'riskFilter', 'operatorFilter'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => {
+      if (hasGenerated) generateDorks();
+    });
+  });
+  styleSelect.addEventListener('change', () => {
+    const style = styleSelect.value;
+    writeSetting('operatorStyle', style);
+    if (hasGenerated) generateDorks();
+    const count = filterDorks(dorks, 'all', 'all', 'official', style).length;
+    announce('styleChanged', { style, count });
+  });
+  document.getElementById('siteUrl').addEventListener('keydown', event => {
+    if (event.key === 'Enter' && document.getElementById('helpModal').hidden) {
+      event.preventDefault();
+      generateDorks();
+    }
+  });
 });
 
 function showHelpModal() {
-  document.getElementById('helpModal').style.display = 'block';
-  document.body.style.overflow = 'hidden';
+  previousFocus = document.activeElement;
+  document.getElementById('helpModal').hidden = false;
+  document.querySelector('.container').inert = true;
+  document.body.classList.add('modal-open');
+  document.querySelector('.close-button').focus();
 }
 
 function hideHelpModal() {
-  document.getElementById('helpModal').style.display = 'none';
-  document.body.style.overflow = 'auto';
+  const modal = document.getElementById('helpModal');
+  if (modal.hidden) return;
+  modal.hidden = true;
+  document.querySelector('.container').inert = false;
+  document.body.classList.remove('modal-open');
+  if (previousFocus) previousFocus.focus();
 }
 
 document.addEventListener('keydown', function(event) {
+  const modal = document.getElementById('helpModal');
+  if (modal.hidden) return;
   if (event.key === 'Escape') {
+    event.preventDefault();
     hideHelpModal();
-  } else if (event.key === 'Enter') {
-    const activeElement = document.activeElement;
-    // ドメイン入力フィールドにフォーカスがある場合、またはボタン以外の要素の場合
-    if (activeElement.id === 'siteUrl' || (activeElement.tagName !== 'BUTTON' && activeElement.tagName !== 'SELECT')) {
-      generateDorks();
+  } else if (event.key === 'Tab') {
+    const focusable = [...modal.querySelectorAll('button, a[href], [tabindex="0"]')]
+      .filter(element => element.getClientRects().length);
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
     }
   }
 });
 
 function updateResultsCounter(count, totalDorks = null) {
-  const counter = document.getElementById("resultsCounter");
-  if (count === 0) {
-    counter.textContent = "";
-  } else if (totalDorks !== null) {
-    counter.textContent = `(${count}/${totalDorks} Dorks)`;
-  } else {
-    counter.textContent = `(${count} Dorks)`;
+  document.getElementById('resultsCounter').textContent = totalDorks === null
+    ? '' : textFor('counter', { count, total: totalDorks });
+}
+
+function appendMessage(parent, message) {
+  const paragraph = document.createElement('p');
+  paragraph.textContent = message;
+  parent.appendChild(paragraph);
+}
+
+async function copyQuery(query) {
+  const revision = ++copyRevision;
+  try {
+    await navigator.clipboard.writeText(query);
+    if (revision === copyRevision) announce('copySuccess');
+  } catch {
+    if (revision === copyRevision) announce('copyFailure');
   }
 }
 
 function generateDorks() {
-  const site = document.getElementById("siteUrl").value.trim();
-  const category = document.getElementById("categoryFilter").value;
-  const risk = document.getElementById("riskFilter").value;
-  const resultsDiv = document.getElementById("results");
+  const input = document.getElementById('siteUrl').value.trim();
+  const normalized = normalizeDomain(input);
+  const category = document.getElementById('categoryFilter').value;
+  const risk = document.getElementById('riskFilter').value;
+  const operator = document.getElementById('operatorFilter').value;
+  const style = document.getElementById('operatorStyle').value;
+  const resultsDiv = document.getElementById('results');
+  hasGenerated = true;
+  copyRevision++;
+  notice = null;
+  document.getElementById('statusMessage').textContent = '';
+  resultsDiv.replaceChildren();
 
-  resultsDiv.innerHTML = "";
-
-  if (!site) {
-    resultsDiv.innerHTML = `<p>${translations[currentLang].errorDomain}</p>`;
+  if (!normalized.ok) {
+    const reasons = { empty: 'errorDomain', whitespace: 'errorWhitespace', ip: 'errorIp' };
+    appendMessage(resultsDiv, textFor(reasons[normalized.reason] || 'errorFormat'));
     updateResultsCounter(0);
     return;
   }
-
-  // カテゴリとリスクの両方でANDフィルタリング
-  const filtered = dorks.filter(dork => {
-    const matchCategory = (category === "all" || dork.category === category);
-    const matchRisk = (risk === "all" || dork.risk === risk);
-    return matchCategory && matchRisk;
-  });
-
-  if (filtered.length === 0) {
-    resultsDiv.innerHTML = `<p>${translations[currentLang].noDorks}</p>`;
-    updateResultsCounter(0, dorks.length);
-    return;
+  const domain = normalized.domain;
+  if (domain.includes('xn--') && /[^\x00-\x7f]/.test(input)) {
+    appendMessage(resultsDiv, textFor('searchingAs', { input, domain }));
   }
 
+  // このqueryをリンク・URL・コピー・ラベル・フィルターの共通の入力とする。
+  const prepared = dorks.map(dork => {
+    const q = buildQuery(domain, applyOperatorStyle(dork.query, style));
+    return { ...dork, query: q };
+  });
+  // 表記適用済みなので、filterDorksの既定の無変換モードで判定する。
+  const filtered = filterDorks(prepared, category, risk, operator);
   updateResultsCounter(filtered.length, dorks.length);
+  announce('generated', { count: filtered.length });
+  if (filtered.length === 0) appendMessage(resultsDiv, textFor('noDorks'));
 
   filtered.forEach(dork => {
-    const fullQuery = `site:${site} ${dork.query}`;
-    const encodedQuery = encodeURIComponent(fullQuery);
-    const searchUrl = `https://www.google.com/search?q=${encodedQuery}`;
+    const q = dork.query;
+    const entry = document.createElement('div');
+    entry.className = 'dork-entry';
+    entry.dataset.id = dork.id;
+    const explanation = currentLang === 'en' ? dork.explanationEn : dork.explanation;
+    entry.setAttribute('data-tooltip', explanation);
 
-    const entry = document.createElement("div");
-    entry.className = "dork-entry";
-    const explanation = currentLang === 'en' && dork.explanationEn ? dork.explanationEn : dork.explanation;
-    entry.setAttribute("data-tooltip", explanation);
+    const link = document.createElement('a');
+    link.href = 'https://www.google.com/search?q=' + encodeURIComponent(q);
+    link.textContent = q;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.setAttribute('aria-description', explanation);
 
-    const link = document.createElement("a");
-    link.href = searchUrl;
-    link.textContent = `🔍 ${fullQuery}`;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-
-    const riskSpan = document.createElement("span");
+    const riskSpan = document.createElement('span');
     riskSpan.className = `risk ${dork.risk}`;
-    riskSpan.textContent = dork.risk.charAt(0).toUpperCase() + dork.risk.slice(1);
+    riskSpan.textContent = textFor('risk' + dork.risk[0].toUpperCase() + dork.risk.slice(1));
+    entry.append(link, riskSpan);
 
-    entry.appendChild(link);
-    entry.appendChild(riskSpan);
+    if (!isOfficialQuery(q)) {
+      const label = document.createElement('span');
+      label.className = 'undocumented';
+      label.textContent = textFor('undocumented');
+      label.title = textFor('undocumentedHelp');
+      label.setAttribute('aria-label', textFor('undocumentedHelp'));
+      entry.appendChild(label);
+    }
+    const copy = document.createElement('button');
+    copy.type = 'button';
+    copy.className = 'copy-button';
+    copy.textContent = textFor('copy');
+    copy.setAttribute('aria-label', textFor('copyLabel', { query: q }));
+    copy.addEventListener('click', () => copyQuery(q));
+    entry.appendChild(copy);
     resultsDiv.appendChild(entry);
   });
 }
