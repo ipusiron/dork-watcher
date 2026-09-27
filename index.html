@@ -12,56 +12,61 @@
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   </head>
   <body>
-    <noscript>このツールを使うには、ブラウザーのJavaScriptを有効にしてください。</noscript>
+    <noscript>このツールを使うには、ブラウザーのJavaScriptを有効にしてください。
+      / Enable JavaScript in your browser to use this tool.</noscript>
     <div class="container">
       <div class="header-buttons">
-        <button class="help-button" type="button" aria-label="ヘルプ" title="ヘルプ">❓</button>
-        <button class="lang-toggle" type="button" aria-label="English" title="English">JA</button>
+        <button class="help-button" type="button" aria-label="ヘルプ" title="ヘルプ"
+          data-i18n-aria-label="help.tooltip" data-i18n-title="help.tooltip">❓</button>
+        <button class="lang-toggle" id="langToggle" type="button" aria-label="English"
+          title="English" data-i18n="app.langButton" data-i18n-aria-label="app.langAria"
+          data-i18n-title="app.langAria">EN</button>
         <button class="theme-toggle" type="button" aria-label="ダークモードに切り替え" title="ダークモードに切り替え">🌙</button>
       </div>
-      <h1><span id="appTitle">Dork Watcher</span></h1>
+      <h1><span id="appTitle" data-i18n="app.heading">Dork Watcher</span></h1>
       <p id="resultsCounter" class="results-counter" aria-live="polite"></p>
-      <p id="subtitle">
+      <p id="subtitle" data-i18n="app.subtitle">
         Google検索を使って、あなたのサイトが漏洩情報を含んでいないかチェックしましょう。
       </p>
 
       <div class="input-section">
-        <label for="siteUrl">対象サイトのドメイン名（例: example.com）</label
+        <label for="siteUrl" data-i18n="input.label">対象サイトのドメイン名（例: example.com）</label
         ><br />
-        <input type="text" id="siteUrl" placeholder="yourdomain.com" />
-        <button id="generateButton" type="button">チェック開始</button>
-        <p id="permissionNote">自分が管理するドメイン、または調査の許可を得たドメインだけを入力してください。</p>
+        <input type="text" id="siteUrl" placeholder="yourdomain.com"
+          data-i18n-placeholder="input.placeholder" />
+        <button id="generateButton" type="button" data-i18n="input.button">チェック開始</button>
+        <p id="permissionNote" data-i18n="input.permission">自分が管理するドメイン、または調査の許可を得たドメインだけを入力してください。</p>
       </div>
 
       <div class="filter-section">
         <div class="filter-item">
-          <label for="operatorStyle">演算子の表記：</label>
+          <label for="operatorStyle" data-i18n="filter.style">演算子の表記：</label>
           <select id="operatorStyle">
-            <option value="filetype">filetype:（公式）</option>
-            <option value="ext">ext:（非公式・短縮）</option>
+            <option value="filetype" data-i18n="filter.styleFiletype">filetype:（公式）</option>
+            <option value="ext" data-i18n="filter.styleExt">ext:（非公式・短縮）</option>
           </select>
         </div>
         <div class="filter-item">
-          <label for="categoryFilter">カテゴリー：</label>
+          <label for="categoryFilter" data-i18n="filter.category">カテゴリー：</label>
           <select id="categoryFilter">
-            <option value="all">すべて</option>
+            <option value="all" data-i18n="filter.all">すべて</option>
           </select>
         </div>
         <div class="filter-item">
-          <label for="riskFilter">リスク：</label>
+          <label for="riskFilter" data-i18n="filter.risk">リスク：</label>
           <select id="riskFilter">
-            <option value="all">すべて</option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
+            <option value="all" data-i18n="filter.all">すべて</option>
+            <option value="high" data-i18n="risk.high">High</option>
+            <option value="medium" data-i18n="risk.medium">Medium</option>
+            <option value="low" data-i18n="risk.low">Low</option>
           </select>
         </div>
         <div class="filter-item">
-          <label for="operatorFilter">演算子：</label>
+          <label for="operatorFilter" data-i18n="filter.operator">演算子：</label>
           <select id="operatorFilter">
-            <option value="all">すべて</option>
-            <option value="official">公式のみ</option>
-            <option value="unofficial">非公式を含む</option>
+            <option value="all" data-i18n="filter.all">すべて</option>
+            <option value="official" data-i18n="filter.operatorOfficial">公式のみ</option>
+            <option value="unofficial" data-i18n="filter.operatorUnofficial">非公式を含む</option>
           </select>
         </div>
       </div>
@@ -72,23 +77,25 @@
       </div>
 
       <footer class="footer">
-        <p><span id="footerText">GitHubリポジトリーはこちら（</span>
+        <p><span id="footerText" data-i18n="footer.repo">GitHubリポジトリーはこちら（</span>
           <a href="https://github.com/ipusiron/dork-watcher" target="_blank"
-            rel="noopener noreferrer" id="footerLink">ipusiron/dork-watcher</a><span>）</span></p>
+            rel="noopener noreferrer" id="footerLink">ipusiron/dork-watcher</a><span
+            data-i18n="footer.repoEnd">）</span></p>
       </footer>
     </div>
 
-    <!-- ヘルプモーダル -->
+    <!-- ヘルプモーダル（日本語と英語の本文をそれぞれ置き、表示する側だけを残す） -->
     <div id="helpModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
       <div class="modal-content">
         <div class="modal-header">
-          <h2 id="helpTitle">Dork Watcher ヘルプ</h2>
-          <button class="close-button" type="button" aria-label="ヘルプを閉じる">&times;</button>
+          <h2 id="helpTitle" data-i18n="help.title">Dork Watcher ヘルプ</h2>
+          <button class="close-button" type="button" aria-label="ヘルプを閉じる"
+            data-i18n-aria-label="help.close">&times;</button>
         </div>
         <div class="modal-body" id="helpJa" lang="ja" tabindex="0">
           <h3>🔍 Dork Watcherとは？</h3>
           <p>Google Dorkを使って、あなたのサイトに潜在的な情報漏洩がないかを確認するためのツールです。</p>
-          
+
           <h3>📝 使い方</h3>
           <ol>
             <li><strong>ドメイン名を入力</strong>: 調査したいサイトのドメイン名（例: example.com）を入力してください。</li>
@@ -131,8 +138,9 @@
             <li>検索結果から消す：非表示ツールと恒久的な削除を併用する。</li>
             <li>原因を直す：配置やデプロイの手順を見直す。</li>
           </ol>
-          <h3>🌗 テーマ切り替え</h3>
+          <h3>🌗 テーマと言語の切り替え</h3>
           <p>右上のボタンでライトモード・ダークモードを切り替えできます。設定は自動保存されます。</p>
+          <p>その隣のボタンで日本語と英語を切り替えます。<code>?lang=en</code>付きで開くと保存内容より優先します。</p>
         </div>
         <div class="modal-body" id="helpEn" lang="en" tabindex="0" hidden>
           <h3>🔍 What is Dork Watcher?</h3>
@@ -148,7 +156,7 @@
 
           <h3>⚠️ Important Notes</h3>
           <ul>
-            <li><strong>Only investigate your own sites</strong> - Avoid unauthorized investigation of others' sites.</li>
+            <li><strong>Investigate your own sites only</strong> - Never investigate someone else's site without permission.</li>
             <li><strong>Empty results are normal</strong> - Empty results alone do not prove the site is safe.</li>
             <li><strong>Google search limitations</strong> - Frequent searches may be restricted by Google.</li>
             <li><strong>Result interpretation</strong> - Hits don't necessarily indicate actual vulnerabilities. Expert verification is recommended.</li>
@@ -156,9 +164,9 @@
 
           <h3>📊 Category Descriptions</h3>
           <ul>
-            <li><strong>File Leaks</strong>: Check for leaked sensitive files like .env, .sql, .log</li>
-            <li><strong>Admin Access</strong>: Check for exposed admin panels and login pages</li>
-            <li><strong>Info Keywords</strong>: Check for sensitive information like passwords and API keys</li>
+            <li><strong>File leaks</strong>: Check for leaked sensitive files like .env, .sql, .log</li>
+            <li><strong>Admin access</strong>: Check for exposed admin panels and login pages</li>
+            <li><strong>Info keywords</strong>: Check for sensitive information like passwords and API keys</li>
             <li><strong>Others</strong>: Check for directory listings, test pages, etc.</li>
           </ul>
 
@@ -180,12 +188,14 @@
             <li>Remove search results: use Removals and permanent removal measures.</li>
             <li>Fix the cause: review deployment and file locations.</li>
           </ol>
-          <h3>🌗 Theme Toggle</h3>
-          <p>Use the button in the top right to switch between light and dark modes. Settings are automatically saved.</p>
+          <h3>🌗 Theme and language</h3>
+          <p>Use the button in the top right to switch between light and dark modes. Settings are saved automatically.</p>
+          <p>The button next to it switches Japanese and English. Opening with <code>?lang=ja</code> overrides the saved value.</p>
         </div>
       </div>
     </div>
 
+    <script src="i18n.js"></script>
     <script src="domain.js"></script>
     <script src="query.js"></script>
     <script src="dorks.js"></script>

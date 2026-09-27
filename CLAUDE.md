@@ -14,7 +14,8 @@ Dork Watcher is a Google Dorking security tool that helps check websites for pot
 - **dorks.js**: Contains exactly 30 baseline `filetype:` Dorks with stable ids and official flags
 - **test/**: Dependency-free Node tests, including README tables and the complete directory tree
 - **.github/workflows/test.yml**: Node 22, `npm test` on push and pull_request
-- **script.js**: Main application logic including filtering, URL generation, theming, and i18n
+- **i18n.js**: The Japanese/English dictionaries plus the DOM layer that applies them
+- **script.js**: Main application logic including filtering, URL generation and theming
 - **index.html**: Single-page interface with domain input, filters, help modal, and results display
 - **style.css**: Styling with CSS custom properties for dark/light theme support
 
@@ -35,8 +36,17 @@ Each dork object in the `dorks` array contains:
 
 - `generateDorks()`: Core function that validates the domain, filters by category/risk/operator and generates Google search URLs with `site:domain.com` prefix
 - `toggleTheme()` / `initTheme()`: Dark/light mode with localStorage persistence and system preference detection
-- `toggleLanguage()` / `initLanguage()`: Japanese/English i18n with localStorage persistence
+- `onLanguageChange()`: Re-renders state-derived labels, the help body and the live notice
 - `showHelpModal()` / `hideHelpModal()`: Help modal display
+
+### Language (i18n.js)
+
+- `I18n.init()`: Resolves the language from `?lang=`, then localStorage, then `navigator.language`
+- `I18n.setLanguage(value)`: Persists the choice, re-applies the dictionary and fires `languagechange`
+- `I18n.t(key, values)`: Looks up a message and fills `{name}` holes; throws on an unknown key
+- `I18n.apply(root)`: Writes `data-i18n`, `data-i18n-title`, `data-i18n-aria-label` and `data-i18n-placeholder`
+- Search operators (site:, filetype:, inurl:, intitle:, intext:, ext:) are proper names; translate their explanations, never the operators
+- Do not put `data-i18n-<attr>` on the theme toggle: its label comes from state, so `apply()` would roll it back
 
 ### Keyboard Shortcuts
 
@@ -68,8 +78,10 @@ Each dork object in the `dorks` array contains:
 - No innerHTML assignment, inline event/style attributes, external resources or automatic searches
 - Clipboard API only; announce failures instead of using execCommand
 - Read/write settings only through try/catch guarded readSetting/writeSetting
-- Store only theme, language and operatorStyle; invalid values use validated defaults
-- Keep Japanese/English help bodies in HTML and synchronize all dynamic strings through translations
+- Store only theme and operatorStyle in script.js; i18n.js owns dork-watcher-language
+- Invalid stored values fall back to validated defaults; blocked storage must not break the page
+- Keep Japanese/English help bodies in HTML and route every dynamic string through `I18n.t`
+- Hold the live notice as `{ key, values }` so a language change can re-translate it
 - Enter is scoped to the input; Escape and focus trapping are scoped to the open help dialog
 - Preserve existing images; screenshots are captured with the external Day020 Python script
 - Existing query descriptions and metadata identifiers remain unchanged
