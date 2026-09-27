@@ -278,6 +278,14 @@ const dorks = [
   }
 ];
 
+// カテゴリー名は識別子なので日本語のまま残し、表示用の訳だけを辞書のキーで示す。
+const categoryKeys = {
+  'ファイル漏洩': 'category.file',
+  '管理系': 'category.admin',
+  '情報ワード': 'category.info',
+  'その他': 'category.other'
+};
+
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { dorks };
+  module.exports = { dorks, categoryKeys };
 }

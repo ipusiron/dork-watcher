@@ -36,6 +36,8 @@ hub: true
 
 # Dork Watcher - Google Hacking支援ツール
 
+[English](README.en.md) · 日本語
+
 ![GitHub Repo stars](https://img.shields.io/github/stars/ipusiron/dork-watcher?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/ipusiron/dork-watcher?style=social)
 ![GitHub last commit](https://img.shields.io/github/last-commit/ipusiron/dork-watcher)
@@ -130,6 +132,7 @@ DuckDuckGoのほうが早く・多く・長期間にわたりそれらを表示�
 - クエリのコピー（URLではなく検索式をコピー）
 - ドメイン名の正規化と検証（URLからのホスト抽出・IDNのpunycode変換）
 - ヘルプモーダル（使い方・注意点をわかりやすく案内）
+- 日本語・英語の切り替え（`?lang=en`、保存、ブラウザーの言語から判定）
 - ダークモード切り替え対応
 - 結果件数のリアルタイム表示
 
@@ -149,6 +152,14 @@ Googleの`site:`自体はURLプレフィックスも扱えますが、このツ�
 
 コピーにはブラウザーのClipboard APIを使います。
 ブラウザーの権限や実行環境によって拒否された場合は画面に通知します。
+
+## 🌐 表示言語
+
+右上の「EN」ボタンで日本語と英語を切り替えます。選んだ言語はlocalStorageに保存します。
+初回は`?lang=ja`・`?lang=en`の指定、保存値、ブラウザーの言語設定の順で決めます。
+検索演算子（`site:`・`filetype:`・`inurl:`・`intitle:`・`intext:`・`ext:`）は固有名詞なので訳しません。
+訳すのは演算子の説明と画面の文言だけです。
+生成済みのDork一覧・入力したドメイン名・絞り込みの選択は、切り替えても保たれます。
 
 ## 🔤 公式演算子と非公式演算子
 
@@ -323,7 +334,7 @@ robots.txt自体は誰でも読めるため、隠したい場所を公表する�
 CSPは`script-src 'self'`・`style-src 'self'`・`connect-src 'none'`を含み、インラインスクリプトや外部通信を制限します。
 referrerは`no-referrer`、別タブで開くリンクは`rel="noopener noreferrer"`です。
 metaでは`frame-ancestors`が適用されないため、埋め込み拒否は保証しません。
-localStorageに保存するのはテーマ・言語・演算子の表記だけです。
+localStorageに保存するのはテーマ（`theme`）・表示言語（`dork-watcher-language`）・演算子の表記（`operatorStyle`）だけです。
 保存が禁止された環境でも、そのページの操作は継続できます。
 
 ## 🧪 テスト
@@ -334,7 +345,7 @@ Node 22以上で、依存パッケージをインストールせずに実行で�
 npm test
 ```
 
-ドメイン正規化24例、30件のクエリ、各フィルターの件数、配色、HTML、READMEの表・画像・全ファイル一覧を検証します。
+ドメイン正規化24例、30件のクエリ、各フィルターの件数、配色、HTML、日英の辞書、READMEの表・画像・全ファイル一覧を検証します。
 GitHub Actionsでもpushとpull_requestのたびに同じテストを実行します。
 
 ## 📁 ディレクトリー構造
@@ -357,10 +368,12 @@ dork-watcher/                     # Google Dorkで自サイトの情報漏洩を
 ├── CLAUDE.md                     # AI向けの開発ガイド
 ├── domain.js                     # ドメイン名の正規化と検証
 ├── dorks.js                      # Dork30件の定義
+├── i18n.js                       # 日本語と英語の文言とその適用
 ├── index.html                    # 画面のマークアップ
 ├── LICENSE                       # 本ツールのMITライセンス
 ├── package.json                  # 依存なしのnpm test定義
 ├── query.js                      # 検索クエリの組み立てと絞り込み
+├── README.en.md                  # 英語版のドキュメント
 ├── README.md                     # 本ドキュメント
 ├── script.js                     # 画面の組み立てとイベント処理
 ├── style.css                     # CSS変数の配色とレスポンシブレイアウト
@@ -370,6 +383,7 @@ dork-watcher/                     # Google Dorkで自サイトの情報漏洩を
     ├── dorks.test.js             # Dork定義の件数・重複・禁止パターン
     ├── format.test.js            # 行長と読みやすさの検証
     ├── html.test.js              # CSP・ARIA・インライン属性の検証
+    ├── i18n.test.js              # 日英の辞書とdata-i18nの検証
     ├── query.test.js             # クエリ組み立て・絞り込み件数・演算子判定の検証
     ├── readme.test.js            # 表・画像・ツリー・YAMLの検証
     └── static.test.js            # 純粋性・ログ出力なし・CI設定の検証

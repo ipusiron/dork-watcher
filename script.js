@@ -1,112 +1,6 @@
-// 言語設定
-const translations = {
-  ja: {
-    title: "Dork Watcher",
-    subtitle: "Google検索を使って、あなたのサイトが漏洩情報を含んでいないかチェックしましょう。",
-    domainLabel: "対象サイトのドメイン名（例: example.com）",
-    domainPlaceholder: "yourdomain.com",
-    checkButton: "チェック開始",
-    categoryLabel: "カテゴリー：",
-    riskLabel: "リスク：",
-    categoryAll: "すべて",
-    categoryFile: "ファイル漏洩",
-    categoryAdmin: "管理系", 
-    categoryInfo: "情報ワード",
-    categoryOther: "その他",
-    riskAll: "すべて",
-    riskHigh: "High",
-    riskMedium: "Medium", 
-    riskLow: "Low",
-    errorDomain: "⚠️ ドメイン名を入力してください。",
-    noDorks: "該当するDorkはありません。",
-    helpTitle: "Dork Watcher ヘルプ",
-    helpTooltip: "ヘルプ",
-    themeTooltipDark: "ダークモードに切り替え",
-    themeTooltipLight: "ライトモードに切り替え",
-    langTooltip: "English",
-    footerText: "GitHubリポジトリーはこちら（",
-    footerLink: "ipusiron/dork-watcher",
-    operatorLabel: "演算子：",
-    styleLabel: "演算子の表記：",
-    operatorAll: "すべて",
-    operatorOfficial: "公式のみ",
-    operatorUnofficial: "非公式を含む",
-    styleFiletype: "filetype:（公式）",
-    styleExt: "ext:（非公式・短縮）",
-    errorWhitespace: "⚠️ ドメイン名に空白は使えません。検索演算子ではなくドメイン名だけを入力してください。",
-    errorIp: "⚠️ IPアドレスは site: 演算子で使えません。ドメイン名を入力してください。",
-    errorFormat: "⚠️ ドメイン名の形式が正しくありません（例: example.com）。",
-    searchingAs: "{input} を {domain} として検索します",
-    undocumented: "非公式",
-    undocumentedHelp: "Googleのヘルプに載っていない演算子を含む（予告なく効かなくなることがある）",
-    copy: "コピー",
-    copyLabel: "{query} をコピー",
-    copySuccess: "コピーしました",
-    copyFailure: "コピーできませんでした",
-    closeHelp: "ヘルプを閉じる",
-    permission: "自分が管理するドメイン、または調査の許可を得たドメインだけを入力してください。",
-    generated: "{count}件のDorkを生成しました",
-    styleChanged: "{style}: 表記に切り替えました。公式の演算子だけで書けるDorkは{count}件になります",
-    counter: "({count}/{total} Dorks)",
-    lightIcon: "☀️",
-    darkIcon: "🌙",
-    languageIcon: "EN"
-  },
-  en: {
-    title: "Dork Watcher",
-    subtitle: "Check your site for potential information leaks using Google search.",
-    domainLabel: "Target domain name (e.g., example.com)",
-    domainPlaceholder: "yourdomain.com",
-    checkButton: "Start Check",
-    categoryLabel: "Category:",
-    riskLabel: "Risk:",
-    categoryAll: "All",
-    categoryFile: "File Leaks",
-    categoryAdmin: "Admin Access",
-    categoryInfo: "Info Keywords",
-    categoryOther: "Others",
-    riskAll: "All",
-    riskHigh: "High",
-    riskMedium: "Medium",
-    riskLow: "Low", 
-    errorDomain: "⚠️ Please enter a domain name.",
-    noDorks: "No matching Dorks found.",
-    helpTitle: "Dork Watcher Help",
-    helpTooltip: "Help",
-    themeTooltipDark: "Switch to Dark Mode",
-    themeTooltipLight: "Switch to Light Mode",
-    langTooltip: "日本語",
-    footerText: "GitHub Repository (",
-    footerLink: "ipusiron/dork-watcher",
-    operatorLabel: "Operators:",
-    styleLabel: "Operator style:",
-    operatorAll: "All",
-    operatorOfficial: "Documented only",
-    operatorUnofficial: "Includes undocumented",
-    styleFiletype: "filetype: (documented)",
-    styleExt: "ext: (undocumented)",
-    errorWhitespace: "⚠️ Domain names cannot contain spaces. Enter only the domain name, not a search operator.",
-    errorIp: "⚠️ site: does not work with IP addresses. Enter a domain name.",
-    errorFormat: "⚠️ Invalid domain name format (e.g. example.com).",
-    searchingAs: "Searching as {domain} (entered: {input})",
-    undocumented: "Undocumented",
-    undocumentedHelp: "Contains operators not listed in Google Help; they may stop working without notice.",
-    copy: "Copy",
-    copyLabel: "Copy {query}",
-    copySuccess: "Copied",
-    copyFailure: "Could not copy",
-    closeHelp: "Close help",
-    permission: "Enter only domains you manage or have permission to investigate.",
-    generated: "Generated {count} Dorks",
-    styleChanged: "Switched to {style}: style. {count} Dorks use documented operators only.",
-    counter: "({count}/{total} Dorks)",
-    lightIcon: "☀️",
-    darkIcon: "🌙",
-    languageIcon: "JA"
-  }
-};
+// 文言は i18n.js が持つ。ここは画面の組み立てとイベント処理だけを担う。
+const THEME_ICON = { dark: '☀️', light: '🌙' };
 
-let currentLang = 'ja';
 let hasGenerated = false;
 let previousFocus = null;
 let notice = null;
@@ -129,85 +23,32 @@ function writeSetting(key, value) {
   }
 }
 
-function textFor(key, values = {}) {
-  return translations[currentLang][key].replace(/\{(\w+)\}/g, (_, name) => String(values[name]));
-}
-
+// 表示中の通知は、文字列ではなくキーで覚える。言語を変えたら訳し直せる。
 function announce(key, values = {}) {
   notice = { key, values };
-  document.getElementById('statusMessage').textContent = textFor(key, values);
+  document.getElementById('statusMessage').textContent = I18n.t(key, values);
 }
 
-function toggleLanguage() {
-  currentLang = currentLang === 'ja' ? 'en' : 'ja';
-  writeSetting('language', currentLang);
-  updateTexts();
-  updateLanguageIcon();
+function clearNotice() {
+  notice = null;
+  document.getElementById('statusMessage').textContent = '';
 }
 
-function updateLanguageIcon() {
-  const langButton = document.querySelector('.lang-toggle');
-  langButton.textContent = textFor('languageIcon');
-  langButton.title = textFor('langTooltip');
-  langButton.setAttribute('aria-label', textFor('langTooltip'));
+function updateHelpLanguage() {
+  document.getElementById('helpJa').hidden = I18n.language !== 'ja';
+  document.getElementById('helpEn').hidden = I18n.language !== 'en';
 }
 
-function updateTexts() {
-  document.documentElement.lang = currentLang;
-  const textIds = {
-    appTitle: 'title', subtitle: 'subtitle', generateButton: 'checkButton',
-    footerText: 'footerText', footerLink: 'footerLink', permissionNote: 'permission'
-  };
-  for (const [id, key] of Object.entries(textIds)) {
-    document.getElementById(id).textContent = textFor(key);
-  }
-  const labels = {
-    siteUrl: 'domainLabel', categoryFilter: 'categoryLabel', riskFilter: 'riskLabel',
-    operatorFilter: 'operatorLabel', operatorStyle: 'styleLabel'
-  };
-  for (const [id, key] of Object.entries(labels)) {
-    document.querySelector(`label[for="${id}"]`).textContent = textFor(key);
-  }
-  document.getElementById('siteUrl').placeholder = textFor('domainPlaceholder');
-  const categoryKeys = ['categoryFile', 'categoryAdmin', 'categoryInfo', 'categoryOther'];
-  document.querySelectorAll('#categoryFilter option').forEach((option, i) => {
-    option.textContent = textFor(i === 0 ? 'categoryAll' : categoryKeys[i - 1]);
-  });
-  const options = {
-    riskFilter: ['riskAll', 'riskHigh', 'riskMedium', 'riskLow'],
-    operatorFilter: ['operatorAll', 'operatorOfficial', 'operatorUnofficial'],
-    operatorStyle: ['styleFiletype', 'styleExt']
-  };
-  for (const [id, keys] of Object.entries(options)) {
-    document.querySelectorAll(`#${id} option`).forEach((option, i) => {
-      option.textContent = textFor(keys[i]);
-    });
-  }
-  const helpButton = document.querySelector('.help-button');
-  helpButton.title = textFor('helpTooltip');
-  helpButton.setAttribute('aria-label', textFor('helpTooltip'));
+function onLanguageChange() {
+  // 状態で変わる属性は apply() に任せず、状態から組み立て直す。
   updateThemeIcon(document.documentElement.getAttribute('data-theme'));
-  updateHelpModal();
-
-  // 空欄のエラーも含めて再表示する。カウンターの要素は作り直さない。
+  updateHelpLanguage();
   const savedNotice = notice;
   if (hasGenerated) generateDorks();
-  if (savedNotice && savedNotice.key !== 'generated') {
+  // generateDorks が出す件数の通知より、表示中だった通知を優先して戻す。
+  if (savedNotice && savedNotice.key !== 'status.generated') {
     announce(savedNotice.key, savedNotice.values);
   }
-}
-
-function updateHelpModal() {
-  document.getElementById('helpTitle').textContent = textFor('helpTitle');
-  document.querySelector('.close-button').setAttribute('aria-label', textFor('closeHelp'));
-  document.getElementById('helpJa').hidden = currentLang !== 'ja';
-  document.getElementById('helpEn').hidden = currentLang !== 'en';
-}
-
-function initLanguage() {
-  currentLang = readSetting('language', ['ja', 'en'], 'ja');
-  updateTexts();
-  updateLanguageIcon();
 }
 
 function toggleTheme() {
@@ -221,8 +62,8 @@ function toggleTheme() {
 function updateThemeIcon(theme) {
   const toggleButton = document.querySelector('.theme-toggle');
   const dark = theme === 'dark';
-  toggleButton.textContent = textFor(dark ? 'lightIcon' : 'darkIcon');
-  toggleButton.title = textFor(dark ? 'themeTooltipLight' : 'themeTooltipDark');
+  toggleButton.textContent = dark ? THEME_ICON.dark : THEME_ICON.light;
+  toggleButton.title = I18n.t(dark ? 'theme.toLight' : 'theme.toDark');
   toggleButton.setAttribute('aria-label', toggleButton.title);
 }
 
@@ -238,14 +79,19 @@ document.addEventListener('DOMContentLoaded', function() {
   categoriesOf(dorks).forEach(category => {
     const option = document.createElement('option');
     option.value = category;
+    // データの名前は日本語のまま識別子として使い、表示だけを辞書から引く。
+    option.dataset.i18n = categoryKeys[category];
     categorySelect.appendChild(option);
   });
   const styleSelect = document.getElementById('operatorStyle');
   styleSelect.value = readSetting('operatorStyle', ['filetype', 'ext'], 'filetype');
+  I18n.init();
   initTheme();
-  initLanguage();
+  updateHelpLanguage();
   document.getElementById('generateButton').addEventListener('click', generateDorks);
-  document.querySelector('.lang-toggle').addEventListener('click', toggleLanguage);
+  document.getElementById('langToggle').addEventListener('click',
+    () => I18n.setLanguage(I18n.language === 'ja' ? 'en' : 'ja'));
+  document.addEventListener('languagechange', onLanguageChange);
   document.querySelector('.theme-toggle').addEventListener('click', toggleTheme);
   document.querySelector('.help-button').addEventListener('click', showHelpModal);
   document.querySelector('.close-button').addEventListener('click', hideHelpModal);
@@ -262,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
     writeSetting('operatorStyle', style);
     if (hasGenerated) generateDorks();
     const count = filterDorks(dorks, 'all', 'all', 'official', style).length;
-    announce('styleChanged', { style, count });
+    announce('status.styleChanged', { style, count });
   });
   document.getElementById('siteUrl').addEventListener('keydown', event => {
     if (event.key === 'Enter' && document.getElementById('helpModal').hidden) {
@@ -312,7 +158,7 @@ document.addEventListener('keydown', function(event) {
 
 function updateResultsCounter(count, totalDorks = null) {
   document.getElementById('resultsCounter').textContent = totalDorks === null
-    ? '' : textFor('counter', { count, total: totalDorks });
+    ? '' : I18n.t('status.counter', { count, total: totalDorks });
 }
 
 function appendMessage(parent, message) {
@@ -325,9 +171,9 @@ async function copyQuery(query) {
   const revision = ++copyRevision;
   try {
     await navigator.clipboard.writeText(query);
-    if (revision === copyRevision) announce('copySuccess');
+    if (revision === copyRevision) announce('copy.done');
   } catch {
-    if (revision === copyRevision) announce('copyFailure');
+    if (revision === copyRevision) announce('copy.failed');
   }
 }
 
@@ -341,19 +187,18 @@ function generateDorks() {
   const resultsDiv = document.getElementById('results');
   hasGenerated = true;
   copyRevision++;
-  notice = null;
-  document.getElementById('statusMessage').textContent = '';
+  clearNotice();
   resultsDiv.replaceChildren();
 
   if (!normalized.ok) {
-    const reasons = { empty: 'errorDomain', whitespace: 'errorWhitespace', ip: 'errorIp' };
-    appendMessage(resultsDiv, textFor(reasons[normalized.reason] || 'errorFormat'));
+    const reasons = { empty: 'error.empty', whitespace: 'error.whitespace', ip: 'error.ip' };
+    appendMessage(resultsDiv, I18n.t(reasons[normalized.reason] || 'error.format'));
     updateResultsCounter(0);
     return;
   }
   const domain = normalized.domain;
   if (domain.includes('xn--') && /[^\x00-\x7f]/.test(input)) {
-    appendMessage(resultsDiv, textFor('searchingAs', { input, domain }));
+    appendMessage(resultsDiv, I18n.t('status.searchingAs', { input, domain }));
   }
 
   // このqueryをリンク・URL・コピー・ラベル・フィルターの共通の入力とする。
@@ -364,15 +209,15 @@ function generateDorks() {
   // 表記適用済みなので、filterDorksの既定の無変換モードで判定する。
   const filtered = filterDorks(prepared, category, risk, operator);
   updateResultsCounter(filtered.length, dorks.length);
-  announce('generated', { count: filtered.length });
-  if (filtered.length === 0) appendMessage(resultsDiv, textFor('noDorks'));
+  announce('status.generated', { count: filtered.length });
+  if (filtered.length === 0) appendMessage(resultsDiv, I18n.t('status.noDorks'));
 
   filtered.forEach(dork => {
     const q = dork.query;
     const entry = document.createElement('div');
     entry.className = 'dork-entry';
     entry.dataset.id = dork.id;
-    const explanation = currentLang === 'en' ? dork.explanationEn : dork.explanation;
+    const explanation = I18n.language === 'en' ? dork.explanationEn : dork.explanation;
     entry.setAttribute('data-tooltip', explanation);
 
     const link = document.createElement('a');
@@ -384,22 +229,22 @@ function generateDorks() {
 
     const riskSpan = document.createElement('span');
     riskSpan.className = `risk ${dork.risk}`;
-    riskSpan.textContent = textFor('risk' + dork.risk[0].toUpperCase() + dork.risk.slice(1));
+    riskSpan.textContent = I18n.t('risk.' + dork.risk);
     entry.append(link, riskSpan);
 
     if (!isOfficialQuery(q)) {
       const label = document.createElement('span');
       label.className = 'undocumented';
-      label.textContent = textFor('undocumented');
-      label.title = textFor('undocumentedHelp');
-      label.setAttribute('aria-label', textFor('undocumentedHelp'));
+      label.textContent = I18n.t('undocumented.label');
+      label.title = I18n.t('undocumented.help');
+      label.setAttribute('aria-label', I18n.t('undocumented.help'));
       entry.appendChild(label);
     }
     const copy = document.createElement('button');
     copy.type = 'button';
     copy.className = 'copy-button';
-    copy.textContent = textFor('copy');
-    copy.setAttribute('aria-label', textFor('copyLabel', { query: q }));
+    copy.textContent = I18n.t('copy.label');
+    copy.setAttribute('aria-label', I18n.t('copy.aria', { query: q }));
     copy.addEventListener('click', () => copyQuery(q));
     entry.appendChild(copy);
     resultsDiv.appendChild(entry);

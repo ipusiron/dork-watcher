@@ -18,14 +18,16 @@ test('CSP, local classic scripts, referrer, viewport, noscript and favicon', () 
   assert.match(icons[0][0], /href="assets\/favicon.svg"/);
   assert.doesNotMatch(html, /favicon\//);
   const scripts = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)];
-  assert.deepEqual(scripts.map(m => m[1]), ['domain.js', 'query.js', 'dorks.js', 'script.js']);
+  assert.deepEqual(scripts.map(m => m[1]),
+    ['i18n.js', 'domain.js', 'query.js', 'dorks.js', 'script.js']);
 });
 
 test('stable ids, bilingual help, dialog and accessible notifications', () => {
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
   assert.equal(new Set(ids).size, ids.length);
   for (const id of ['siteUrl', 'categoryFilter', 'riskFilter', 'operatorFilter', 'operatorStyle',
-    'results', 'resultsCounter', 'helpModal', 'appTitle', 'generateButton', 'statusMessage']) {
+    'results', 'resultsCounter', 'helpModal', 'appTitle', 'generateButton', 'statusMessage',
+    'langToggle', 'helpJa', 'helpEn']) {
     assert.ok(ids.includes(id), id);
   }
   assert.match(html, /id="helpJa" lang="ja"/);
