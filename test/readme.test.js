@@ -119,3 +119,19 @@ test('README tree lists every file and directory with aligned descriptions', () 
   }
   assert.deepEqual(listed.sort(), inventory(root).sort());
 });
+
+test('ユースケースの「このツールならではの使い方」を query.js / domain.js で再計算（日英）', () => {
+  const { buildQuery, isOfficialQuery, toExtStyle } = require('../query');
+  const { normalizeDomain } = require('../domain');
+  const en = fs.readFileSync(path.join(root, 'README.en.md'), 'utf8');
+  assert.equal(buildQuery('example.com', 'filetype:xls'), 'site:example.com filetype:xls');
+  assert.equal(isOfficialQuery('filetype:pdf'), true);
+  assert.equal(isOfficialQuery('ext:pdf'), false);
+  assert.equal(toExtStyle('filetype:pdf'), 'ext:pdf');
+  assert.deepEqual(normalizeDomain('https://Example.COM/path?q=1'), { ok: true, domain: 'example.com' });
+  assert.equal(normalizeDomain('not a domain').ok, false);
+  for (const md of [readme, en]) {
+    assert.ok(md.includes('site:example.com filetype:xls'));
+    assert.ok(md.includes('example.com'));
+  }
+});
