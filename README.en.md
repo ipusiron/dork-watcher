@@ -300,6 +300,20 @@ the following in mind.
 
 ---
 
+## 🎯 Use cases
+
+### Ways of using this tool in particular
+
+- Confirming that you scope the check to your own domain (self-check and OSINT classes): `site:` limits the search to your own domain. Combining `example.com` with the file-search `filetype:xls` makes the query `site:example.com filetype:xls`. You can confirm the idea of narrowing an exhaustive search to your own property and checking whether spreadsheets that should not be public can be found from outside
+- Confirming the difference between an official operator and an unofficial alias (search-operator classes): `filetype:` is Google's official operator, while `ext:` means the same but is unofficial. `filetype:pdf` is judged official and `ext:pdf` unofficial. Rewriting it as `ext:` gives much the same result, and you can confirm it is a choice between the official and unofficial spelling
+- Confirming that the input domain is normalized (input-processing classes): entering `https://Example.COM/path?q=1` drops the scheme, upper case, path and query and normalizes it to `example.com`. Input containing whitespace is rejected as not a valid domain. You can confirm the idea of normalizing input into a fixed form before using it in a search
+
+### General uses
+
+- Check whether your own or your company's site exposes files or pages unintentionally
+- Use it as material to learn how to use Google search operators (`site:`, `filetype:` and so on)
+- Explain how information gathering from search engines (OSINT) works in security training
+
 ## 🔒 Security
 
 The domain is parsed as a URL, and the host name, label lengths and TLD format are all checked.
