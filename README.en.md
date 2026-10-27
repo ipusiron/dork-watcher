@@ -363,6 +363,7 @@ dork-watcher/
 ├── README.md                     # Japanese documentation
 ├── script.js                     # Page assembly and event handling
 ├── style.css                     # Colour variables and responsive layout
+├── theme-init.js                 # Sets the theme before the first paint (loaded in <head>)
 └── test/                         # node --test suite
     ├── contrast.test.js          # Text and surface contrast
     ├── domain.test.js            # Domain normalisation expectations
@@ -372,7 +373,8 @@ dork-watcher/
     ├── i18n.test.js              # The two dictionaries and the data-i18n wiring
     ├── query.test.js             # Query building, filter counts, operator classification
     ├── readme.test.js            # Tables, images, tree and YAML
-    └── static.test.js            # Purity, no logging, CI configuration
+    ├── static.test.js            # Purity, no logging, CI configuration
+    └── theme-init.test.js        # Initial theme choice and where it loads
 ```
 
 ## 💻 Requirements

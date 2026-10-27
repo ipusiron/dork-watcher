@@ -18,6 +18,7 @@ Dork Watcher is a Google Dorking security tool that helps check websites for pot
 - **script.js**: Main application logic including filtering, URL generation and theming
 - **index.html**: Single-page interface with domain input, filters, help modal, and results display
 - **style.css**: Styling with CSS custom properties for dark/light theme support
+- **theme-init.js**: Loaded synchronously in `<head>` after the stylesheet; sets `data-theme` before the first paint (saved `theme`, else system preference)
 
 ## Core Components
 
@@ -35,7 +36,7 @@ Each dork object in the `dorks` array contains:
 ### Main Functions (script.js)
 
 - `generateDorks()`: Core function that validates the domain, filters by category/risk/operator and generates Google search URLs with `site:domain.com` prefix
-- `toggleTheme()` / `initTheme()`: Dark/light mode with localStorage persistence and system preference detection
+- `toggleTheme()` / `initTheme()`: Toggles and persists dark/light mode; `initTheme()` only syncs the button with the `data-theme` set by `theme-init.js`
 - `onLanguageChange()`: Re-renders state-derived labels, the help body and the live notice
 - `showHelpModal()` / `hideHelpModal()`: Help modal display
 

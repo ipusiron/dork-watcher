@@ -19,7 +19,7 @@ test('CSP, local classic scripts, referrer, viewport, noscript and favicon', () 
   assert.doesNotMatch(html, /favicon\//);
   const scripts = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)];
   assert.deepEqual(scripts.map(m => m[1]),
-    ['i18n.js', 'domain.js', 'query.js', 'dorks.js', 'script.js']);
+    ['theme-init.js', 'i18n.js', 'domain.js', 'query.js', 'dorks.js', 'script.js']);
 });
 
 test('stable ids, bilingual help, dialog and accessible notifications', () => {

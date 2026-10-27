@@ -67,11 +67,9 @@ function updateThemeIcon(theme) {
   toggleButton.setAttribute('aria-label', toggleButton.title);
 }
 
+// 初回のテーマは <head> の theme-init.js が最初の描画の前に決める。ここではボタンを合わせるだけ。
 function initTheme() {
-  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const theme = readSetting('theme', ['light', 'dark'], systemPrefersDark ? 'dark' : 'light');
-  document.documentElement.setAttribute('data-theme', theme);
-  updateThemeIcon(theme);
+  updateThemeIcon(document.documentElement.getAttribute('data-theme'));
 }
 
 document.addEventListener('DOMContentLoaded', function() {
