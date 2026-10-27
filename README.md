@@ -391,6 +391,7 @@ dork-watcher/                     # Google Dorkで自サイトの情報漏洩を
 ├── README.md                     # 本ドキュメント
 ├── script.js                     # 画面の組み立てとイベント処理
 ├── style.css                     # CSS変数の配色とレスポンシブレイアウト
+├── theme-init.js                 # 最初の描画の前にテーマを決める（<head>で読み込む）
 └── test/                         # node --testの自動テスト
     ├── contrast.test.js          # 文字色と面のコントラストの検証
     ├── domain.test.js            # ドメインの正規化と検証の期待値
@@ -400,7 +401,8 @@ dork-watcher/                     # Google Dorkで自サイトの情報漏洩を
     ├── i18n.test.js              # 日英の辞書とdata-i18nの検証
     ├── query.test.js             # クエリ組み立て・絞り込み件数・演算子判定の検証
     ├── readme.test.js            # 表・画像・ツリー・YAMLの検証
-    └── static.test.js            # 純粋性・ログ出力なし・CI設定の検証
+    ├── static.test.js            # 純粋性・ログ出力なし・CI設定の検証
+    └── theme-init.test.js        # テーマの初期判定と読み込み位置の検証
 ```
 
 ## 💻 動作環境
