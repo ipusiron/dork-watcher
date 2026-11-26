@@ -18,7 +18,7 @@ category_en:
   - OSINT
   - Google Hacking
 
-difficulty: 1
+difficulty: 2
 
 tags:
   - google-dork
